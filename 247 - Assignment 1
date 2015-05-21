@@ -1,0 +1,1091 @@
+#include <string>
+#include <map>
+#include <iostream>
+#include <stdlib.h>
+#include <fstream>
+//************************************************************************
+//* YOUR IMPLENTATION OF BCODE, BUILDING, COLLECTION HERE
+//************************************************************************
+using namespace std;
+
+struct connectionInfo
+{
+    // remember to sort the list on alpha betical order
+    // remember to use stack like function for building with the same connector
+    string connected;
+    string connector;
+    connectionInfo* next;
+};
+
+
+class BCode {
+public:
+    ~BCode(){}
+    BCode(string);
+    string getBCode();
+private:
+    string buildingCode;
+};
+
+//Implementation of BCode here:
+BCode::BCode(string code)
+{
+    buildingCode = code;
+}
+
+string BCode::getBCode()
+{
+    return buildingCode;
+}
+
+class Collection;
+class Graph;
+
+class Building {
+public:
+    Building(){}
+    Building(string, string);
+    ~Building();
+    string getOfficial();
+    string getCode();
+    friend class Collection;
+    friend class Graph;
+    friend ostream& operator<< ( ostream&, const Graph&);
+private:
+    BCode* buildingCode;
+    string officialName;
+    Building* next;
+    connectionInfo* connectionList;
+};
+
+Building::Building(string code, string name)
+{
+    buildingCode = new BCode(code);
+    officialName = name;
+    next = NULL;
+    connectionList = NULL;
+}
+
+Building::~Building()
+{
+    delete buildingCode;
+    connectionInfo* temp;
+    while(connectionList != NULL)
+    {
+        temp = connectionList;
+        connectionList = connectionList->next;
+        delete temp;
+    }
+
+}
+string Building::getOfficial()
+{
+    return officialName;
+}
+
+string Building::getCode()
+{
+    return buildingCode->getBCode();
+}
+
+ostream& operator<< (ostream &sout, Building& b) // doesn't work with const
+{
+    sout << b.getCode() << "\t" << b.getOfficial();
+    return sout;
+}
+
+
+class Collection
+{
+public:
+    Collection(){buildingList = NULL;}
+    ~Collection();
+    void insert(string, string);
+    void remove(string);
+    Building* findBuilding(string);
+    void printBuildings();
+
+private:
+    Building* buildingList;
+};
+
+Collection::~Collection()
+{
+    //Delete all the building lists
+    Building* temp;
+    while(buildingList != NULL)
+    {
+        temp = buildingList;
+        buildingList = buildingList->next;
+        delete temp;
+    }
+}
+
+void Collection::insert(string buildingName, string officialName)
+{
+    Building* current;
+    if(buildingList == NULL || buildingList->getCode() >= buildingName)
+    {
+        current = new Building(buildingName, officialName);
+        current->next = buildingList;
+        buildingList = current;
+    }
+    else
+    {
+        current = buildingList;
+        while(current->next != NULL && current->next->getCode() < buildingName)
+        {
+            current = current->next;
+        }
+        Building* newBuilding = new Building(buildingName, officialName);
+        newBuilding->next = current->next;
+        current->next = newBuilding;
+    }
+}
+
+void Collection::remove(string buildingCode)
+{
+    if(buildingList->getCode() == buildingCode)
+    {
+        if(buildingList->next == NULL)
+        {
+            delete buildingList;
+            buildingList = NULL;
+        }
+        else
+        {
+            Building* temp = buildingList;
+            buildingList = buildingList->next;
+            delete temp;
+        }
+    }
+    else
+    {
+        Building* current = buildingList;
+        while(current->next != NULL && current->next->getCode() != buildingCode)
+        {
+            current = current->next;
+        }
+        Building* temp = current->next;
+        current->next = temp->next;
+        delete temp;
+    }
+}
+
+Building* Collection::findBuilding(string code)
+{
+   Building* temp = buildingList;
+   while(temp->getCode() != code)
+   {
+       temp = temp->next;
+   }
+   return temp;
+}
+
+void Collection::printBuildings()
+{
+    Building* temp = buildingList;
+    while(temp != NULL)
+    {
+        cout << temp->getCode() << endl;
+        temp = temp->next;
+    }
+}
+//===================================================================
+// Graph (of Buildings and Connectors)
+//===================================================================
+
+class Graph {
+public:
+    Graph() : nodes_(NULL) {}                               // constructor
+    ~Graph();                                               // destructor
+    Graph ( const Graph& );                                 // copy constructor
+    void addNode ( Building* );                             // mutator - add node to graph
+    void removeNode ( string );                             // mutator - remove node from graph
+    Building* findBuilding ( string ) const;                // accessor - find building stored in node in graph
+    void addEdge ( string, string, string );                // mutator - add edge to graph
+    void removeEdge ( string, string );                     // mutator - remove edge from graph
+    void printPaths ( string, string, const bool = false ) const; // accessor - print path from one node to another
+    void deleteGraph();                                     // delete graph
+    friend ostream& operator<< ( ostream&, const Graph& );  // insertion operator (insert graph into output stream)
+    Graph& operator= ( const Graph&);                       // assignment operator for graph objects
+
+    bool operator== ( const Graph& target) const                 // equality operator for graph objects
+    {
+        bool checkEqual = true;
+        Building* current1 = nodes_;
+        Building* current2 = target.nodes_;
+
+        int buildingcount1 = 0;
+        int buildingcount2 = 0;
+        int connectionCount1 = 0;
+        int connectionCount2 = 0;
+
+        while(current1 != NULL)
+        {
+                buildingcount1++;
+                current1 = current1->next;
+        }
+
+        while(current2 != NULL)
+        {
+            buildingcount2++;
+            current2 = current2->next;
+        }
+
+        if(buildingcount1 != buildingcount2)
+        {
+                return false;
+        }
+        else
+        {
+            current1 = nodes_;
+            current2 = target.nodes_;
+
+            while(current1 != NULL)
+            {
+
+                connectionInfo* connect1 = current1->connectionList;
+                connectionInfo* connect2 = current2->connectionList;
+
+                if(current1->getCode() != current2->getCode() || current1->getOfficial() != current2->getOfficial() )
+                {
+                    return false;
+                }
+
+                while(connect1 != NULL)
+                {
+                    connectionCount1++;
+                    connect1 = connect1->next;
+                }
+
+                while(connect2 != NULL)
+                {
+                    connectionCount2++;
+                    connect2 = connect2->next;
+                }
+
+                if(connectionCount1 != connectionCount2)
+                {
+                    return false;
+                }
+
+                connectionCount1 = 0;
+                connectionCount2 = 0;
+
+                connect1 = current1->connectionList;
+                connect2 = current2->connectionList;
+
+                while(connect1 != NULL)
+                {
+                    if(connect1->connected != connect2->connected || connect1->connector != connect2->connector)
+                    {
+                        return false;
+                    }
+                    connect1 = connect1->next;
+                    connect2 = connect2->next;
+
+                }
+
+                current1 = current1->next;
+                current2 = current2->next;
+            }
+        }
+
+        return checkEqual;
+    }
+    void printNodes() const;
+
+private:
+    Building* nodes_;
+    void printHelper(Building*, connectionInfo*&, connectionInfo*, string) const;
+    void printHelper1(string, string) const;
+};
+
+Graph::~Graph()
+{
+    Building* temp = NULL;
+    while(nodes_ != NULL)
+    {
+        temp = nodes_;
+        nodes_ = nodes_->next;
+        delete temp;
+    }
+}
+Graph::Graph(const Graph& g)
+{
+    Building* current = g.nodes_;
+    if(current == NULL)
+    {
+        nodes_ = current;
+    }
+    else
+    {
+        Building* head = new Building(current->getCode(), current->getOfficial());
+        Building* last = head;
+
+        if(current->connectionList != NULL)
+        {
+            connectionInfo* currentConnect = current->connectionList;
+            connectionInfo* headConnect = new connectionInfo;
+
+            headConnect->connected = currentConnect->connected;
+            headConnect->connector = currentConnect->connector;
+            connectionInfo* lastConnect = headConnect;
+
+            currentConnect = currentConnect->next;
+
+            while(currentConnect != NULL)
+            {
+                lastConnect->next = new connectionInfo;
+                lastConnect = lastConnect->next;
+
+                lastConnect->connected = currentConnect->connected;
+                lastConnect->connector = currentConnect->connector;
+
+                currentConnect = currentConnect->next;
+            }
+            lastConnect->next = NULL;
+            last->connectionList = headConnect;
+
+        }
+
+        current = current->next;
+
+        while(current != NULL)
+        {
+            last->next = new Building(current->getCode(), current->getOfficial());
+            last = last->next;
+            if(current->connectionList != NULL)
+            {
+                connectionInfo* currentConnect = current->connectionList;
+                connectionInfo* headConnect = new connectionInfo;
+
+                headConnect->connected = currentConnect->connected;
+                headConnect->connector = currentConnect->connector;
+                connectionInfo* lastConnect = headConnect;
+
+                currentConnect = currentConnect->next;
+
+                while(currentConnect != NULL)
+                {
+                    lastConnect->next = new connectionInfo;
+                    lastConnect = lastConnect->next;
+
+                    lastConnect->connected = currentConnect->connected;
+                    lastConnect->connector = currentConnect->connector;
+
+                    currentConnect = currentConnect->next;
+                }
+                lastConnect->next = NULL;
+                last->connectionList = headConnect;
+
+            }
+            current = current->next;
+        }
+        last->next = NULL;
+        nodes_ = head;
+
+
+
+        /*
+        Building* newBuilding = NULL;]
+        Building* prev = NULL;
+        while(temp != NULL)
+        {
+            newBuilding = new Building(temp->getCode(), temp->getOfficial());
+            if(temp->connectionList != NULL)
+            {
+                connectionInfo* newConnection = temp->connectionList;
+                connectionInfo* tempConnection = NULL;
+                while(newConnection != NULL)
+                {
+                    tempConnection = new connectionInfo;
+                    tempConnection->connected = newConnection->connected;
+                    tempConnection->connector = newConnection->connector;
+
+                }
+            }
+
+        }
+        */
+    }
+
+}
+
+void Graph::addNode(Building* nodeToAdd)
+{
+    Building* current;
+    if(nodes_ == NULL || nodes_->getCode() >= nodeToAdd->getCode())
+    {
+        current = new Building(nodeToAdd->getCode(), nodeToAdd->getOfficial());
+        current->next = nodes_;
+        nodes_ = current;
+    }
+    else
+    {
+        current = nodes_;
+        while(current->next != NULL && current->next->getCode() < nodeToAdd->getCode())
+        {
+            current = current->next;
+        }
+        Building* newNode = new Building(nodeToAdd->getCode(), nodeToAdd->getOfficial());
+        newNode->next = current->next;
+        current->next = newNode;
+    }
+}
+
+void Graph::removeNode(string nodeToRemove)
+{
+
+    Building* current = nodes_;
+    if(current->getCode() == nodeToRemove && current->next == NULL)
+    {
+        delete nodes_;
+        nodes_ = NULL;
+    }
+    else if(current->getCode() == nodeToRemove && current->next != NULL)
+    {
+        if(current->connectionList != NULL)
+        {
+            connectionInfo* head = current->connectionList;
+            connectionInfo* currentConnect = current->connectionList;
+            while(currentConnect != NULL)
+            {
+                removeEdge(current->getCode(), currentConnect->connected);
+                currentConnect = current->connectionList;
+            }
+        }
+        nodes_ = nodes_->next;
+        delete current;
+    }
+    else
+    {
+        while(current->next != NULL && current->next->getCode() != nodeToRemove)
+        {
+            current = current->next;
+        }
+
+        if(current->connectionList != NULL)
+        {
+            connectionInfo* head = current->connectionList;
+            connectionInfo* currentConnect = current->connectionList;
+            while(currentConnect != NULL)
+            {
+                removeEdge(current->getCode(), currentConnect->connected);
+                currentConnect = current->connectionList;
+            }
+        }
+        Building* temp = current->next;
+        current->next = temp->next;
+        delete temp;
+    }
+
+
+
+}
+
+void Graph::addEdge(string code1, string code2, string connector)
+{
+    Building* temp1 = nodes_;
+    Building* temp2 = nodes_;
+
+    // Could replace with the find function
+    while(temp1->getCode() != code1)
+    {
+        temp1 = temp1->next;
+    }
+    while(temp2->getCode() != code2)
+    {
+        temp2 = temp2->next;
+    }
+
+    connectionInfo* newConnection1 = new connectionInfo;
+    newConnection1->connected = code2;
+    newConnection1->connector = connector;
+    newConnection1->next = temp1->connectionList;
+    temp1->connectionList = newConnection1;
+
+    connectionInfo* newConnection2 = new connectionInfo;
+    newConnection2->connected = code1;
+    newConnection2->connector = connector;
+    newConnection2->next = temp2->connectionList;
+    temp2->connectionList = newConnection2;
+}
+
+void Graph::removeEdge(string building1, string building2)
+{
+    Building* b1 = findBuilding(building1);
+    Building* b2 = findBuilding(building2);
+    connectionInfo* building1Connect = b1->connectionList;
+    connectionInfo* building2Connect = b2->connectionList;
+
+    if(building1Connect->connected == building2)
+    {
+        if(building1Connect->next == NULL)
+        {
+            delete building1Connect;
+            b1->connectionList = NULL;
+        }
+        else
+        {
+            connectionInfo* temp = building1Connect;
+            b1->connectionList = b1->connectionList->next;
+            delete temp;
+        }
+
+    }
+    else
+    {
+        while(building1Connect->next != NULL && building1Connect->next->connected != building2)
+        {
+            building1Connect = building1Connect->next;
+        }
+
+        connectionInfo* temp = building1Connect->next;
+        cout << temp->connected << endl;
+        building1Connect->next = temp->next;
+        if(building1Connect->next == NULL)
+        {
+            //cout << "check" << endl;
+            //cout << b1->connectionList->connected << endl;
+            //cout << b1->connectionList->next->connected << endl;
+        }
+        delete temp;
+
+
+    }
+
+    if(building2Connect->connected == building1)
+    {
+        if(building2Connect->next == NULL)
+        {
+            delete building2Connect;
+            b2->connectionList = NULL;
+        }
+        else
+        {
+            connectionInfo* temp = building2Connect;
+            b2->connectionList = b2->connectionList->next;
+            delete temp;
+        }
+
+    }
+    else
+    {
+        while(building2Connect->next != NULL && building2Connect->next->connected != building1)
+        {
+            building2Connect = building2Connect->next;
+        }
+
+        connectionInfo* temp = building2Connect->next;
+        cout << temp->connected << endl;
+        building2Connect->next = temp->next;
+        if(building2Connect->next == NULL)
+        {
+            //cout << "check" << endl;
+            //cout << b2->connectionList->connected << endl;
+            //cout << b2->connectionList->next->connected << endl;
+        }
+        delete temp;
+
+
+    }
+}
+
+void Graph::deleteGraph()
+{
+    Building* temp = NULL;
+    while(nodes_ != NULL)
+    {
+        temp = nodes_;
+        nodes_ = nodes_->next;
+        delete temp;
+    }
+}
+
+Building* Graph::findBuilding(string buildingName) const
+{
+    Building* temp = nodes_;
+    while(temp != NULL)
+    {
+        if(temp->getCode() == buildingName)
+        {
+            return temp;
+        }
+        temp = temp->next;
+    }
+    return temp;
+}
+
+void Graph::printHelper(Building* building, connectionInfo*& traveled, connectionInfo* head, string destination) const
+{
+    if(building->getCode() == destination)
+    {
+        return;
+    }
+    else
+    {
+        cout << "heck 3" << endl;
+        if(building->connectionList == NULL)
+        {
+            // could be a case where the building has no connection
+            connectionInfo* current = head;
+            while(current->next != traveled)
+            {
+                cout << "loop1" << endl;
+                current = current->next;
+            }
+            traveled = current;
+            connectionInfo* temp = current->next;
+            traveled->next = temp->next;
+            delete temp;
+            return;
+        }
+        else
+        {
+            connectionInfo* connectTemp = building->connectionList;
+            while(connectTemp != NULL)
+            {
+                bool vistedCheck = false;
+                connectionInfo* checkVisited = head;
+                while(checkVisited != NULL)
+                {
+                    if(checkVisited->connected == connectTemp->connected)
+                    {
+                        vistedCheck = true;
+                        break;
+                    }
+                    checkVisited = checkVisited->next;
+                    cout << "loop2" << endl;
+                }
+                if(vistedCheck == false)
+                {
+                    traveled->next = new connectionInfo;
+                    traveled->next->connected = connectTemp->connected;
+                    traveled->next->connector = connectTemp->connector;
+                    traveled = traveled->next;
+                    traveled->next = NULL;
+                    Building* next = findBuilding(connectTemp->connected);
+                    printHelper(next, traveled, head, destination);
+                    if(traveled->connected == destination)
+                    {
+                        return;
+                    }
+                }
+                cout << "current building " << building->getCode() << endl;
+                cout << "connected temp is " <<connectTemp->connected << endl;
+                connectTemp = connectTemp->next;
+                cout << "loop3" << endl;
+            }
+
+        }
+    }
+    if(traveled->connected != destination)
+    {
+        cout << traveled->connected << endl;
+        connectionInfo* current = head;
+        while(current->next != traveled)
+        {
+            cout << current->connected << endl;
+            current = current->next;
+            cout << "loop5" << endl;
+        }
+        cout << current->connected << endl;
+        traveled = current;
+        cout << "echkasd" << endl;
+        cout << "traveld is currently " << traveled->connected << endl;
+        connectionInfo* temp = current->next;
+        cout << "asda" << endl;
+        traveled->next = temp->next;
+        cout << "asdasdasdada" << endl;
+        delete temp;
+        temp = NULL;
+        cout << "adasdasdasdasdadas" << endl;
+    }
+    return;
+}
+
+void Graph::printHelper1(string code1, string code2) const
+{
+    cout << "check" << endl;
+    connectionInfo* pathTraveled = new connectionInfo;
+    pathTraveled->connected = code1;
+    pathTraveled->connector = "";
+    pathTraveled->next = NULL;
+    Building* starter = findBuilding(code1);
+    connectionInfo* head = pathTraveled;
+    printHelper(starter, pathTraveled, pathTraveled, code2);
+    while(head != NULL)
+    {
+        cout << "connected to " << head->connected << endl;
+        cout << "connector is " << head->connector << endl;
+        head = head->next;
+    }
+    /*
+    cout << "check2" << endl;
+    bool checkTrue = false;
+    connectionInfo* current = pathTraveled;
+    while(current != NULL)
+    {
+        if(current->connected == code2)
+        {
+            checkTrue = true;
+            break;
+        }
+        current = current->next;
+        cout << "loop6" << endl;
+    }
+
+    if(checkTrue == true)
+    {
+        cout  << "\t";
+        while(pathTraveled != NULL)
+        {
+            if(pathTraveled->connected == code2)
+            {
+                cout << code2 << endl;
+            }
+            else
+            {
+                cout << pathTraveled->connected << " " << pathTraveled->connector << " ";
+            }
+            pathTraveled = pathTraveled->next;
+            cout << "loop7" << endl;
+
+        }
+    }
+    */
+}
+
+void Graph::printPaths(string code1, string code2, const bool boolTest )const
+{
+    if(code1 == code2)
+    {
+        cout << code1 << endl;
+        return;
+    }
+    printHelper1(code1, code2);
+
+}
+
+ostream& operator<< ( ostream& sout, const Graph& g)
+{
+    Building* temp = g.nodes_;
+    connectionInfo* temp1 = NULL;
+    while(temp != NULL)
+    {
+        sout << temp->getCode() << "\t" << temp->getOfficial() << endl;
+        temp1 = temp->connectionList;
+        if(temp1 != NULL)
+        {
+            sout << "\t" << "Connects to: ";
+        }
+        while(temp1 != NULL)
+        {
+            sout << temp1->connected << " "; // the extra tab
+            sout << "(" << temp1->connector << ")";
+            if(temp1->next != NULL)
+            {
+                sout << ", ";
+            }
+            else
+            {
+                sout << endl;
+            }
+            temp1 = temp1->next;
+        }
+        sout << endl;
+        temp = temp->next;
+    }
+    return sout;
+}
+Graph& Graph::operator=(const Graph& target)
+{
+    Graph copy(target);
+    Building* temp;
+
+    temp = copy.nodes_;
+    copy.nodes_ = nodes_;
+    nodes_ = temp;
+
+    return *this;
+}
+
+void Graph::printNodes() const
+{
+    Building* temp = nodes_;
+    connectionInfo* temp1 = NULL;
+    while(temp != NULL)
+    {
+        cout << temp->getCode() << endl;
+        temp1 = temp->connectionList;
+        while(temp1 != NULL)
+        {
+            cout << "Connected to: "<< temp1->connected << endl;
+            cout << "Connector: " << temp1->connector << endl;
+            temp1 = temp1->next;
+        }
+        temp = temp->next;
+    }
+}
+
+//************************************************************************
+//* YOUR IMPLENTATION OF GRAPH HERE
+//************************************************************************
+
+
+//************************************************************************
+//  Test Harness Helper functions
+//************************************************************************
+
+//  test-harness operators
+enum Op { NONE, mapPtr, building, wreckage, findB, node, remNode, edge, remEdge, delGraph, copyGraph, assignGraph, eq, path, print };
+
+Op convertOp( string opStr ) {
+    switch( opStr[0] ) {
+        case 'm': return mapPtr;
+        case 'b': return building;
+        case 'w': return wreckage;
+        case 'f': return findB;
+        case 'n': return node;
+        case 'v': return remNode;
+        case 'e': return edge;
+        case 'r': return remEdge;
+        case 'd': return delGraph;
+        case 'c': return copyGraph;
+        case 'a': return assignGraph;
+        case 'q': return eq;
+        case 'p': return path;
+        case 'g': return print;
+        default: {
+            return NONE;
+        }
+    }
+}
+
+//******************************************************************
+// Test Harness for Graph ADT
+//******************************************************************
+
+int main( int argc, char *argv[] ) {
+    Collection buildings;
+    Graph map1, map2;
+
+    // initialize buildings and map1 with input file, if present
+    if ( argc > 1 ) {
+
+        ifstream source(argv[1]);
+        if ( source.fail() ) {
+            cerr << "Error: Could not open file \"" << argv[1] << "\"." << endl;
+            return 1;
+        }
+
+        // create a collection of buildings, and a map of buildings and interior links
+
+        string type;
+        source >> type;
+        Op op = convertOp ( type );
+        while ( !source.eof() ) {
+            switch (op) {
+
+                    // add a new building to the collection of Buildings, and add the building to map1
+                case building : {
+                    string code;
+                    string name;
+                    string name2;
+                    source >> code >> name;
+                    getline( source, name2 );
+                    buildings.insert( code, name+name2 );
+                    map1.addNode( buildings.findBuilding ( code ) );
+                    break;
+                }
+
+                    // add a new link between two existing nodes in map1
+                case edge: {
+                    string code1, code2, type;
+                    source >> code1 >> code2 >> type;
+                    map1.addEdge( code1, code2, type );
+                    string junk;
+                    getline ( source, junk );
+                    break;
+                }
+
+                default: { }
+            }
+            source >> type;
+            op = convertOp( type );
+        }
+    }
+
+    cout << map1;
+
+    Graph* map = &map1;  // input commands affect which ever graph that map points to (map1 or map2)
+
+    cout << "Test harness for Graph ADT:" << endl << endl;
+
+    // get input command
+    cout << "Command: ";
+    string command;
+    cin >> command;
+
+    Op op = convertOp( command );
+
+    while ( !cin.eof() ) {
+        switch (op) {
+
+                // set variable map to point to new graph (map1 or map2)
+            case mapPtr: {
+                string mapNo;
+                cin >> mapNo;
+                map = ( mapNo[0] == '1' ) ? &map1 : &map2;
+                break;
+            }
+
+                // print the current map to the console
+            case print: {
+                cout << *map;
+                break;
+            }
+
+                // add a new building to the collection of buildings
+            case building : {
+                string code;
+                string name;
+                string name2;
+                cin >> code >> name;
+                getline( cin, name2 );
+                buildings.insert( code, name+name2 );
+                buildings.printBuildings(); // Remember to remove this
+                break;
+            }
+
+                // add an existing building to the current map
+            case node: {
+                string code;
+                cin >> code;
+                map->addNode( buildings.findBuilding( code ) );
+                map->printNodes(); // Remember to remove this
+                string junk;
+                getline( cin, junk );
+                break;
+            }
+
+                // find a building in the current map
+            case findB: {
+                string code;
+                cin >> code;
+                Building *b = map->findBuilding ( code );
+                if ( b ) {
+                    cout << *b << endl;
+                }
+                else {
+                    cout << "Couldn't find building " << code << endl;
+                }
+                string junk;
+                getline( cin, junk );
+                break;
+            }
+
+                // add a new link between existing graph nodes in the current map
+            case edge: {
+                string code1, code2, type;
+                cin >> code1 >> code2 >> type;
+                map->addEdge( code1, code2, type );
+                string junk;
+                getline ( cin, junk );
+                break;
+            }
+
+
+                // delete the entire graph (no memory leak).  There is no change to the collection of Buildings.
+            case delGraph: {
+                map->deleteGraph();
+                break;
+            }
+
+                // remove an existing edge from the current map
+            case remEdge: {
+                string code1, code2;
+                cin >> code1 >> code2;
+                map->removeEdge( code1, code2 );
+                string junk;
+                getline ( cin, junk );
+                break;
+            }
+
+                // remove an existing node from the current map.  There is no change to the collection of Buildings.
+            case remNode: {
+                string code;
+                cin >> code;
+                map->removeNode( code );
+                string junk;
+                getline( cin, junk );
+                break;
+            }
+
+                // remove an existing building from the collection of buildings.  The building also needs to be removed from the two maps, as well as all links involving the building
+            case wreckage: {
+                string code;
+                cin >> code;
+                map1.removeNode( code );
+                map2.removeNode( code );
+                buildings.remove ( code );
+                string junk;
+                getline ( cin, junk );
+                break;
+            }
+
+                // check whether map1 is equal to map2
+            case eq: {
+                if ( map1 == map2 ) {
+                    cout << "Maps 1 and 2 are equal." << endl;
+                }
+                else {
+                    cout << "Maps 1 and 2 are NOT equal." << endl;
+                }
+                break;
+            }
+
+                // graph copy constructor
+            case copyGraph: {
+                Graph map3( *map );
+                cout << map3;
+                string junk;
+                getline( cin, junk );
+                break;
+            }
+
+                // graph assignment operator
+            case assignGraph: {
+                map1 = map2;
+                cout << map1;
+                break;
+            }
+
+                // find path(s) in graph from one building to another building
+            case path: {
+                string code1, code2, all;
+                cin >> code1 >> code2 >> all;
+                cout << "Paths from " << code1 << " to " << code2 << " are: " << endl;
+                bool printall = ( all.length() > 0 && all.at(0) == 't' ) ? true : false;
+                map->printPaths( code1, code2, printall );
+                string junk;
+                getline( cin, junk );
+                break;
+            }
+
+            default: {
+                cerr << "Invalid command." << endl;
+            }
+        }
+
+        cout << "Command: ";
+        cin >> command;
+        op = convertOp( command );
+
+    } // while cin OK
+
+    cout << map;
+
+}
