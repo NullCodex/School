@@ -8,14 +8,7 @@
 //************************************************************************
 using namespace std;
 
-struct connectionInfo
-{
-    // remember to sort the list on alpha betical order
-    // remember to use stack like function for building with the same connector
-    string connected;
-    string connector;
-    connectionInfo* next;
-};
+
 
 
 class BCode {
@@ -55,6 +48,14 @@ private:
     BCode* buildingCode;
     string officialName;
     Building* next;
+    struct connectionInfo
+    {
+        // remember to sort the list on alpha betical order
+        // remember to use stack like function for building with the same connector
+        string connected;
+        string connector;
+        connectionInfo* next;
+    };
     connectionInfo* connectionList;
 };
 
@@ -182,15 +183,6 @@ Building* Collection::findBuilding(string code)
    return temp;
 }
 
-void Collection::printBuildings()
-{
-    Building* temp = buildingList;
-    while(temp != NULL)
-    {
-        cout << temp->getCode() << endl;
-        temp = temp->next;
-    }
-}
 //===================================================================
 // Graph (of Buildings and Connectors)
 //===================================================================
@@ -245,8 +237,8 @@ public:
             while(current1 != NULL)
             {
 
-                connectionInfo* connect1 = current1->connectionList;
-                connectionInfo* connect2 = current2->connectionList;
+                Building::connectionInfo* connect1 = current1->connectionList;
+                Building::connectionInfo* connect2 = current2->connectionList;
 
                 if(current1->getCode() != current2->getCode() || current1->getOfficial() != current2->getOfficial() )
                 {
@@ -294,11 +286,10 @@ public:
 
         return checkEqual;
     }
-    void printNodes() const;
 
 private:
     Building* nodes_;
-    void printHelper(Building*, connectionInfo*&, connectionInfo*, string) const;
+    void printHelper(Building*, Building::connectionInfo*&, Building::connectionInfo*, string) const;
     void printHelper1(string, string) const;
 };
 
@@ -326,18 +317,18 @@ Graph::Graph(const Graph& g)
 
         if(current->connectionList != NULL)
         {
-            connectionInfo* currentConnect = current->connectionList;
-            connectionInfo* headConnect = new connectionInfo;
+            Building::connectionInfo* currentConnect = current->connectionList;
+            Building::connectionInfo* headConnect = new Building::connectionInfo;
 
             headConnect->connected = currentConnect->connected;
             headConnect->connector = currentConnect->connector;
-            connectionInfo* lastConnect = headConnect;
+            Building::connectionInfo* lastConnect = headConnect;
 
             currentConnect = currentConnect->next;
 
             while(currentConnect != NULL)
             {
-                lastConnect->next = new connectionInfo;
+                lastConnect->next = new Building::connectionInfo;
                 lastConnect = lastConnect->next;
 
                 lastConnect->connected = currentConnect->connected;
@@ -358,18 +349,18 @@ Graph::Graph(const Graph& g)
             last = last->next;
             if(current->connectionList != NULL)
             {
-                connectionInfo* currentConnect = current->connectionList;
-                connectionInfo* headConnect = new connectionInfo;
+                Building::connectionInfo* currentConnect = current->connectionList;
+                Building::connectionInfo* headConnect = new Building::connectionInfo;
 
                 headConnect->connected = currentConnect->connected;
                 headConnect->connector = currentConnect->connector;
-                connectionInfo* lastConnect = headConnect;
+                Building::connectionInfo* lastConnect = headConnect;
 
                 currentConnect = currentConnect->next;
 
                 while(currentConnect != NULL)
                 {
-                    lastConnect->next = new connectionInfo;
+                    lastConnect->next = new Building::connectionInfo;
                     lastConnect = lastConnect->next;
 
                     lastConnect->connected = currentConnect->connected;
@@ -385,30 +376,6 @@ Graph::Graph(const Graph& g)
         }
         last->next = NULL;
         nodes_ = head;
-
-
-
-        /*
-        Building* newBuilding = NULL;]
-        Building* prev = NULL;
-        while(temp != NULL)
-        {
-            newBuilding = new Building(temp->getCode(), temp->getOfficial());
-            if(temp->connectionList != NULL)
-            {
-                connectionInfo* newConnection = temp->connectionList;
-                connectionInfo* tempConnection = NULL;
-                while(newConnection != NULL)
-                {
-                    tempConnection = new connectionInfo;
-                    tempConnection->connected = newConnection->connected;
-                    tempConnection->connector = newConnection->connector;
-
-                }
-            }
-
-        }
-        */
     }
 
 }
@@ -448,8 +415,8 @@ void Graph::removeNode(string nodeToRemove)
     {
         if(current->connectionList != NULL)
         {
-            connectionInfo* head = current->connectionList;
-            connectionInfo* currentConnect = current->connectionList;
+            Building::connectionInfo* head = current->connectionList;
+            Building::connectionInfo* currentConnect = current->connectionList;
             while(currentConnect != NULL)
             {
                 removeEdge(current->getCode(), currentConnect->connected);
@@ -466,14 +433,14 @@ void Graph::removeNode(string nodeToRemove)
             current = current->next;
         }
 
-        if(current->connectionList != NULL)
+        if(current->next->connectionList != NULL)
         {
-            connectionInfo* head = current->connectionList;
-            connectionInfo* currentConnect = current->connectionList;
+            Building::connectionInfo* head = current->next->connectionList;
+            Building::connectionInfo* currentConnect = current->next->connectionList;
             while(currentConnect != NULL)
             {
-                removeEdge(current->getCode(), currentConnect->connected);
-                currentConnect = current->connectionList;
+                removeEdge(current->next->getCode(), currentConnect->connected);
+                currentConnect = current->next->connectionList;
             }
         }
         Building* temp = current->next;
@@ -500,13 +467,13 @@ void Graph::addEdge(string code1, string code2, string connector)
         temp2 = temp2->next;
     }
 
-    connectionInfo* newConnection1 = new connectionInfo;
+    Building::connectionInfo* newConnection1 = new Building::connectionInfo;
     newConnection1->connected = code2;
     newConnection1->connector = connector;
     newConnection1->next = temp1->connectionList;
     temp1->connectionList = newConnection1;
 
-    connectionInfo* newConnection2 = new connectionInfo;
+    Building::connectionInfo* newConnection2 = new Building::connectionInfo;
     newConnection2->connected = code1;
     newConnection2->connector = connector;
     newConnection2->next = temp2->connectionList;
@@ -517,8 +484,8 @@ void Graph::removeEdge(string building1, string building2)
 {
     Building* b1 = findBuilding(building1);
     Building* b2 = findBuilding(building2);
-    connectionInfo* building1Connect = b1->connectionList;
-    connectionInfo* building2Connect = b2->connectionList;
+    Building::connectionInfo* building1Connect = b1->connectionList;
+    Building::connectionInfo* building2Connect = b2->connectionList;
 
     if(building1Connect->connected == building2)
     {
@@ -529,7 +496,7 @@ void Graph::removeEdge(string building1, string building2)
         }
         else
         {
-            connectionInfo* temp = building1Connect;
+            Building::connectionInfo* temp = building1Connect;
             b1->connectionList = b1->connectionList->next;
             delete temp;
         }
@@ -542,7 +509,7 @@ void Graph::removeEdge(string building1, string building2)
             building1Connect = building1Connect->next;
         }
 
-        connectionInfo* temp = building1Connect->next;
+        Building::connectionInfo* temp = building1Connect->next;
         cout << temp->connected << endl;
         building1Connect->next = temp->next;
         if(building1Connect->next == NULL)
@@ -565,7 +532,7 @@ void Graph::removeEdge(string building1, string building2)
         }
         else
         {
-            connectionInfo* temp = building2Connect;
+            Building::connectionInfo* temp = building2Connect;
             b2->connectionList = b2->connectionList->next;
             delete temp;
         }
@@ -578,7 +545,7 @@ void Graph::removeEdge(string building1, string building2)
             building2Connect = building2Connect->next;
         }
 
-        connectionInfo* temp = building2Connect->next;
+        Building::connectionInfo* temp = building2Connect->next;
         cout << temp->connected << endl;
         building2Connect->next = temp->next;
         if(building2Connect->next == NULL)
@@ -618,7 +585,7 @@ Building* Graph::findBuilding(string buildingName) const
     return temp;
 }
 
-void Graph::printHelper(Building* building, connectionInfo*& traveled, connectionInfo* head, string destination) const
+void Graph::printHelper(Building* building, Building::connectionInfo*& traveled, Building::connectionInfo* head, string destination) const
 {
     if(building->getCode() == destination)
     {
@@ -630,6 +597,7 @@ void Graph::printHelper(Building* building, connectionInfo*& traveled, connectio
         if(building->connectionList == NULL)
         {
             // could be a case where the building has no connection
+            /*
             connectionInfo* current = head;
             while(current->next != traveled)
             {
@@ -640,15 +608,16 @@ void Graph::printHelper(Building* building, connectionInfo*& traveled, connectio
             connectionInfo* temp = current->next;
             traveled->next = temp->next;
             delete temp;
+            */
             return;
         }
         else
         {
-            connectionInfo* connectTemp = building->connectionList;
+            Building::connectionInfo* connectTemp = building->connectionList;
             while(connectTemp != NULL)
             {
                 bool vistedCheck = false;
-                connectionInfo* checkVisited = head;
+                Building::connectionInfo* checkVisited = head;
                 while(checkVisited != NULL)
                 {
                     if(checkVisited->connected == connectTemp->connected)
@@ -661,7 +630,7 @@ void Graph::printHelper(Building* building, connectionInfo*& traveled, connectio
                 }
                 if(vistedCheck == false)
                 {
-                    traveled->next = new connectionInfo;
+                    traveled->next = new Building::connectionInfo;
                     traveled->next->connected = connectTemp->connected;
                     traveled->next->connector = connectTemp->connector;
                     traveled = traveled->next;
@@ -681,10 +650,10 @@ void Graph::printHelper(Building* building, connectionInfo*& traveled, connectio
 
         }
     }
-    if(traveled->connected != destination)
+    if(traveled->connected != destination && traveled != head)
     {
         cout << traveled->connected << endl;
-        connectionInfo* current = head;
+        Building::connectionInfo* current = head;
         while(current->next != traveled)
         {
             cout << current->connected << endl;
@@ -695,7 +664,7 @@ void Graph::printHelper(Building* building, connectionInfo*& traveled, connectio
         traveled = current;
         cout << "echkasd" << endl;
         cout << "traveld is currently " << traveled->connected << endl;
-        connectionInfo* temp = current->next;
+        Building::connectionInfo* temp = current->next;
         cout << "asda" << endl;
         traveled->next = temp->next;
         cout << "asdasdasdada" << endl;
@@ -709,53 +678,49 @@ void Graph::printHelper(Building* building, connectionInfo*& traveled, connectio
 void Graph::printHelper1(string code1, string code2) const
 {
     cout << "check" << endl;
-    connectionInfo* pathTraveled = new connectionInfo;
+    Building::connectionInfo* pathTraveled = new Building::connectionInfo;
     pathTraveled->connected = code1;
     pathTraveled->connector = "";
     pathTraveled->next = NULL;
     Building* starter = findBuilding(code1);
-    connectionInfo* head = pathTraveled;
+    Building::connectionInfo* head = pathTraveled;
     printHelper(starter, pathTraveled, pathTraveled, code2);
-    while(head != NULL)
-    {
-        cout << "connected to " << head->connected << endl;
-        cout << "connector is " << head->connector << endl;
-        head = head->next;
-    }
-    /*
-    cout << "check2" << endl;
-    bool checkTrue = false;
-    connectionInfo* current = pathTraveled;
+    bool checkFlag = false;
+    Building::connectionInfo* current = head;
     while(current != NULL)
     {
         if(current->connected == code2)
         {
-            checkTrue = true;
+            checkFlag = true;
             break;
         }
         current = current->next;
-        cout << "loop6" << endl;
     }
-
-    if(checkTrue == true)
+    current = head;
+    if(checkFlag)
     {
-        cout  << "\t";
-        while(pathTraveled != NULL)
+        cout << "Paths from " << code1 << " to " << code2 << ":" << endl;
+        cout << "\t" << current->connected;;
+        current = current->next;
+        while(current != NULL)
         {
-            if(pathTraveled->connected == code2)
-            {
-                cout << code2 << endl;
-            }
-            else
-            {
-                cout << pathTraveled->connected << " " << pathTraveled->connector << " ";
-            }
-            pathTraveled = pathTraveled->next;
-            cout << "loop7" << endl;
-
+            cout << " " << "(" << current->connector << ")" << " " << current->connected;
+            current = current->next;
         }
+        cout << endl;
     }
-    */
+    else
+    {
+        cout << "Paths from " << code1 << " to " << code2 << ":" << endl;
+        cout << endl;
+    }
+
+    while(head != NULL)
+    {
+        current = head;
+        head = head->next;
+        delete current;
+    }
 }
 
 void Graph::printPaths(string code1, string code2, const bool boolTest )const
@@ -772,7 +737,7 @@ void Graph::printPaths(string code1, string code2, const bool boolTest )const
 ostream& operator<< ( ostream& sout, const Graph& g)
 {
     Building* temp = g.nodes_;
-    connectionInfo* temp1 = NULL;
+    Building::connectionInfo* temp1 = NULL;
     while(temp != NULL)
     {
         sout << temp->getCode() << "\t" << temp->getOfficial() << endl;
@@ -810,24 +775,6 @@ Graph& Graph::operator=(const Graph& target)
     nodes_ = temp;
 
     return *this;
-}
-
-void Graph::printNodes() const
-{
-    Building* temp = nodes_;
-    connectionInfo* temp1 = NULL;
-    while(temp != NULL)
-    {
-        cout << temp->getCode() << endl;
-        temp1 = temp->connectionList;
-        while(temp1 != NULL)
-        {
-            cout << "Connected to: "<< temp1->connected << endl;
-            cout << "Connector: " << temp1->connector << endl;
-            temp1 = temp1->next;
-        }
-        temp = temp->next;
-    }
 }
 
 //************************************************************************
@@ -956,7 +903,6 @@ int main( int argc, char *argv[] ) {
                 cin >> code >> name;
                 getline( cin, name2 );
                 buildings.insert( code, name+name2 );
-                buildings.printBuildings(); // Remember to remove this
                 break;
             }
 
@@ -965,7 +911,6 @@ int main( int argc, char *argv[] ) {
                 string code;
                 cin >> code;
                 map->addNode( buildings.findBuilding( code ) );
-                map->printNodes(); // Remember to remove this
                 string junk;
                 getline( cin, junk );
                 break;
