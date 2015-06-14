@@ -73,6 +73,10 @@ void Game::nextTurn(){
 				}
 				else{
 					//ragequit
+					players_[curPlayer] = Computer();
+					// Want to make game a friend of both computer and human?
+					// Need to transfer the ownership of cards to Computer.
+
 				}
 			}
 			
@@ -88,4 +92,16 @@ void Game::nextTurn(){
 
 void Game::outputCurrentTable() const{
 	std::cout << "Cards on the table:\n" << table_;
+}
+
+bool Game::winnerExists() const // function to check we have a winnder
+{
+	for(int i = 0; i < players_.size(); i++)
+	{
+		if(players_[i].getScore >= 80)
+		{
+			return true;
+		}
+	}
+	return false;
 }

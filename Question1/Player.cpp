@@ -1,5 +1,9 @@
 #include "Player.h"
 
+
+Player::Player():score_(0){}
+Player::~Player(){}
+
 bool Player::contains(Suit s, Rank r) const{
 	for (int i = 0; i < hand_.size(); i++){
 		if (hand_[i]->getSuit() == s && hand_[i]->getRank() == r){
@@ -21,15 +25,32 @@ std::ostream &operator<<(std::ostream & sout, Player& p){
 
 void Player::removeCard(Card& card){
 	std::vector<Card *>::iterator it = std::find(hand_.begin(), hand_.end(), card);
+	discarded_.push_back(*it); // Not sure if the syntax work lol
 	hand_.erase(it);
 }
 
 void Player::discardHand(){
 	hand_.clear();
+	discarded_.clear(); // assuming that we call this function at the end of the round
 }
 
 void Player::newHand(int number, Deck d){
 	for (int i = 0; i < 13; i++){
 		hand_.push_back(d.getCard(i + (number * 13)));
 	}
+}
+
+int Player::getScore() const
+{
+	return score_;
+}
+
+int Player::roundScore() const // Grab the score for the currrent round
+{
+	int sum = 0;
+	for(int i = 0; i < discarded_.size(); i++)
+	{
+		sum += discarded_[i]->getRank+1;
+	}
+	return sum;
 }

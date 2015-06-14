@@ -2,6 +2,8 @@
 #include <iostream>
 #include <math.h>
 
+Human::Human():Player(){} // Use the parent's constructor to set score to 0
+Human::~Human(){}
 
 Card* Human::legalPlays(Card* card){
 	bool printed = false;

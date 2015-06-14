@@ -16,6 +16,8 @@ public:
 	void newRound();
 	void nextTurn();
 	void outputCurrentTable() const;
+	void currentScore() const;
+	bool winnerExists() const;
 private:
 	void determineFirstPlayer();
 	int firstPlayer_;
