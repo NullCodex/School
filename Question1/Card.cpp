@@ -53,4 +53,3 @@ istream &operator>>(istream &in, Card &c){
 	
 	return in;
 }
-
