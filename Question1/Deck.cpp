@@ -7,7 +7,6 @@ Deck::Deck(int seed_){
 	for (int i = 0; i < 52; i++){
 		cards_[i] = new Card(Suit(i/4), Rank(i%13));
 	}
-	shuffle();
 }
 
 Deck::~Deck(){
