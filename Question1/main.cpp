@@ -26,28 +26,13 @@ int main(int argc, char* argv){
 	
 	Game game(inputs, seed);
 	
-	while (true){ //GAME NOT DONE (call function that checks if a players score has reached 80
+	while (true){ //GAME NOT DONE (call function that checks if a players score has reached 80 and hasn't quit
 		game.newRound();
 		//NEED TO DEAL WITH PLAYER QUITTING
 		while (true){ //ROUND NOT DONE (do for loop 13 times? do for loop HAND_SIZE times? (using a constant var)) 
 			game.nextTurn();
 		}
-		//update scores
+		//update scores if player hasnt quit
 
-	}
-	
-	while (true){
-		if (inputs[playerTurn] == 'h'){
-			
-			cout << "Your hand: " << players[playerTurn] << endl;
-			cout << "Legal plays: ";
-			players[playerTurn].legalPlays(table.lastCardPlayed());
-			cout << "\n";
-		}
-		else{
-			//Computer does its stuff
-			cout << "Player " << playerTurn << " ";
-			players[playerTurn].legalPlays(table.lastCardPlayed());
-		}
 	}
 }

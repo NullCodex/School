@@ -35,11 +35,53 @@ void Game::determineFirstPlayer(){
 
 void Game::nextTurn(){
 	int curPlayer = firstPlayer_;
-	for (int i = 0; i < players_.size(); i++){
+	for (int i = 0; i < players_.size() && !quit_; i++){
 		if (typeid(players_[curPlayer]) == typeid(Human())){
 			Command c;
 			outputCurrentTable();
+			std::cout << "Your hand: " << players_[curPlayer] << std::endl;
+			std::cout << "Legal plays: ";
+			players_[curPlayer].legalPlays(table_.lastCardPlayed());
+			std::cout << "\n";
+			c.type = DECK;
+			while (c.type == DECK){
+				std::cin >> c;
+				if (c.type == PLAY){
+					try{
+						players_[curPlayer].playCard(c.card, table_.lastCardPlayed());
+
+					}
+					catch (InvalidCardException &e){
+						std::cout << "This is not a legal play." << std::endl;
+						c.type == DECK;
+					}
+				}
+				else if (c.type == DISCARD){
+					try{
+
+					}
+					catch (CanPlayCardException &e){
+						std::cout << "You have a legal play. You may not discard." << std::endl;
+						c.type == DECK;
+					}
+				}
+				else if (c.type == DECK){
+					std::cout << deck_ << std::endl;
+				}
+				else if (c.type == QUIT){
+					quit_ = true;
+				}
+				else{
+					//ragequit
+				}
+			}
 			
+
+		}
+		else{
+			//Do Computer player's turn
+			std::cout << "Player " << curPlayer << " ";
+			players_[curPlayer].legalPlays(table_.lastCardPlayed());
 		}
 	}
 }
