@@ -29,7 +29,7 @@ int main(int argc, char* argv){
 	while (true){ //GAME NOT DONE (call function that checks if a players score has reached 80 and hasn't quit
 		game.newRound();
 		//NEED TO DEAL WITH PLAYER QUITTING
-		while (true){ //ROUND NOT DONE (do for loop 13 times? do for loop HAND_SIZE times? (using a constant var)) 
+		while (true && !game.hasQuit()){ //ROUND NOT DONE (do for loop 13 times? do for loop HAND_SIZE times? (using a constant var)) 
 			game.nextTurn();
 		}
 		//update scores if player hasnt quit

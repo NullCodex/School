@@ -18,6 +18,7 @@ public:
 	void outputCurrentTable() const;
 	void currentScore() const;
 	bool winnerExists() const;
+	bool hasQuit() const;
 private:
 	void determineFirstPlayer();
 	int firstPlayer_;

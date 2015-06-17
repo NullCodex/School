@@ -44,7 +44,7 @@ void Game::nextTurn(){
 			players_[curPlayer].legalPlays(table_.lastCardPlayed());
 			std::cout << "\n";
 			c.type = DECK;
-			while (c.type == DECK){
+			while (c.type == DECK && !quit_){
 				std::cin >> c;
 				if (c.type == PLAY){
 					try{
@@ -104,4 +104,8 @@ bool Game::winnerExists() const // function to check we have a winnder
 		}
 	}
 	return false;
+}
+
+bool Game::hasQuit() const{
+	return quit_;
 }

@@ -37,4 +37,5 @@ void Human::discardCard(Card& card, Card* lastCard){
 			throw CanPlayCardException(card);
 		}
 	}
+	removeCard(card);
 }

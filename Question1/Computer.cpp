@@ -8,8 +8,11 @@ Card* Computer::legalPlays(Card* card){
 	if (card == NULL){
 		std::cout << "plays 7S.\n";
 		for (int i = 0; i < hand_.size(); i++){
-
-		return;
+			if (*hand_[i] == Card(SPADE, SEVEN)){
+				removeCard(*hand_[i]);
+			}
+			return;
+		}
 	}
 	for (int i = 0; i < hand_.size(); i++){
 		if (card->getRank() == hand_[i]->getRank()){
@@ -28,4 +31,8 @@ Card* Computer::legalPlays(Card* card){
 	std::cout << "discards " << hand_[0] << ".\n";
 	removeCard(*hand_[0]);
 	return;
+}
+
+void discardCard(Card card, Card* lastCard){
+
 }
