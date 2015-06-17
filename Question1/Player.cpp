@@ -25,7 +25,7 @@ std::ostream &operator<<(std::ostream & sout, Player& p){
 
 void Player::removeCard(Card& card){
 	std::vector<Card *>::iterator it = std::find(hand_.begin(), hand_.end(), card);
-	discarded_.push_back(*it); // Not sure if the syntax work lol
+	discarded_.push_back(*it); // Not sure if the syntax work
 	hand_.erase(it);
 }
 
@@ -53,4 +53,35 @@ int Player::roundScore() const // Grab the score for the currrent round
 		sum += discarded_[i]->getRank+1;
 	}
 	return sum;
+}
+
+void Player::playCard(Card card, Card* lastCard){
+	if (!contains(card.getSuit(), card.getRank())){ //Card must be in your hand before you play it
+		throw InvalidCardException(card);
+	}
+	//Check if the play is legal
+	if (!isLegalPlay(card, lastCard)){
+		throw InvalidCardException(card);
+	}
+	std::vector<Card *>::iterator it = std::find(hand_.begin(), hand_.end(), card);
+	hand_.erase(it); //remove card from hand
+	
+}
+
+bool Player::isLegalPlay(Card card, Card* lastCard){
+	if (lastCard == NULL){
+		if (card == Card(SPADE, SEVEN)){
+			return true;
+		}
+		return false;
+	}
+	if (card.getRank() == lastCard->getRank()){
+		return true;
+	}
+	else if (card.getSuit() == lastCard->getSuit()){
+		if (abs(card.getRank() - lastCard->getRank()) == 1){
+			return true;
+		}
+	}
+	return false;
 }

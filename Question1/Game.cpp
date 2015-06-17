@@ -49,9 +49,9 @@ void Game::nextTurn(){
 				if (c.type == PLAY){
 					try{
 						players_[curPlayer].playCard(c.card, table_.lastCardPlayed());
-
+						table_.placeCard(&c.card);
 					}
-					catch (InvalidCardException &e){
+					catch (Player::InvalidCardException &e){
 						std::cout << "This is not a legal play." << std::endl;
 						c.type == DECK;
 					}
