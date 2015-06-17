@@ -10,12 +10,20 @@ public:
 	private:
 		Card card_;
 	};
+	class CanPlayCardException{
+	public:
+		CanPlayCardException(Card card) : card_(card){}
+		Card card() const{ return card_; }
+	private:
+		Card card_;
+	};
 	Player(); // Use player's constructor to set score
 	~Player();
 	bool contains(Suit, Rank) const;
 	//default destructor is fine, deck will take care of deleting card*
 	friend std::ostream &operator<<(std::ostream &, Player&);
 	virtual Card* legalPlays(Card*) = 0;
+	virtual void discardCard(Card&, Card*) = 0;
 	void removeCard(Card&);
 	void playCard(Card, Card*);
 	bool isLegalPlay(Card, Card*); //Check if the card being played is a valid play given the top card on the table

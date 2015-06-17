@@ -6,6 +6,7 @@ public:
 	~Human();
 	void action();
 	Card* legalPlays(Card*);
+	void discardCard(Card&, Card*);
 private:
 
 };

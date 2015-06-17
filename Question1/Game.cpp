@@ -58,9 +58,9 @@ void Game::nextTurn(){
 				}
 				else if (c.type == DISCARD){
 					try{
-
+						players_[curPlayer].discardCard(c.card, table_.lastCardPlayed());
 					}
-					catch (CanPlayCardException &e){
+					catch (Player::CanPlayCardException &e){
 						std::cout << "You have a legal play. You may not discard." << std::endl;
 						c.type == DECK;
 					}

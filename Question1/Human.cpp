@@ -2,7 +2,7 @@
 #include <iostream>
 #include <math.h>
 
-Human::Human():Player(){} // Use the parent's constructor to set score to 0
+Human::Human():Player(){} 
 Human::~Human(){}
 
 Card* Human::legalPlays(Card* card){
@@ -27,6 +27,14 @@ Card* Human::legalPlays(Card* card){
 				}
 				std::cout << hand_[i];
 			}
+		}
+	}
+}
+
+void Human::discardCard(Card& card, Card* lastCard){
+	for (int i = 0; i < hand_.size(); i++){
+		if (isLegalPlay(card, lastCard)){
+			throw CanPlayCardException(card);
 		}
 	}
 }
