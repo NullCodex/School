@@ -85,3 +85,13 @@ bool Player::isLegalPlay(Card card, Card* lastCard){
 	}
 	return false;
 }
+
+
+void Player::discardCard(Card& card, Card* lastCard){
+	for (int i = 0; i < hand_.size(); i++){
+		if (isLegalPlay(card, lastCard)){
+			throw CanPlayCardException(card);
+		}
+	}
+	removeCard(card);
+}

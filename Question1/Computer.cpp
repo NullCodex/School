@@ -4,7 +4,7 @@
 
 Computer::Computer():Player() {} // Use player constructor to set score
 
-Card* Computer::legalPlays(Card* card){
+void Computer::legalPlays(Card* card){
 	if (card == NULL){
 		std::cout << "plays 7S.\n";
 		for (int i = 0; i < hand_.size(); i++){
@@ -31,8 +31,4 @@ Card* Computer::legalPlays(Card* card){
 	std::cout << "discards " << hand_[0] << ".\n";
 	removeCard(*hand_[0]);
 	return;
-}
-
-void discardCard(Card card, Card* lastCard){
-
 }

@@ -5,7 +5,7 @@
 Human::Human():Player(){} 
 Human::~Human(){}
 
-Card* Human::legalPlays(Card* card){
+void Human::legalPlays(Card* card){
 	bool printed = false;
 	if (card == NULL){
 		std::cout << "7S";
@@ -29,13 +29,4 @@ Card* Human::legalPlays(Card* card){
 			}
 		}
 	}
-}
-
-void Human::discardCard(Card& card, Card* lastCard){
-	for (int i = 0; i < hand_.size(); i++){
-		if (isLegalPlay(card, lastCard)){
-			throw CanPlayCardException(card);
-		}
-	}
-	removeCard(card);
 }
