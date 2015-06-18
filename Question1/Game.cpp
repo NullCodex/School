@@ -83,9 +83,13 @@ void Game::nextTurn(){
 				else if (c.type == QUIT){
 					quit_ = true;
 				}
-				else{
-					//ragequit
-					//players_[curPlayer] = Computer(players_[curPlayer]);
+				else{ //ragequit
+					Human* temp = dynamic_cast<Human*>(players_[curPlayer]);
+					players_[curPlayer] = new Computer(players_[curPlayer]);
+					delete temp;
+					std::cout << "Player " << (curPlayer + 1) << " ragequits. A computer will now take over." << std::endl;
+					playerTypes_[curPlayer] = 'c';
+					curPlayer--;
 					// Want to make game a friend of both computer and human?
 					// Need to transfer the ownership of cards to Computer.
 
