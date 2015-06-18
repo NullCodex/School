@@ -21,24 +21,10 @@ std::ostream &operator<<(std::ostream & sout, Player& p){
 	return sout;
 }
 
-template <typename T>
-struct pointer_values_equal
-{
-	const T* to_find;
-
-	bool operator()(const T* other) const
-	{
-		return *to_find == *other;
-	}
-};
-
-void Player::removeCard(Card& card){
-	Card* to_find = new Card(card.getSuit(), card.getRank());
-	pointer_values_equal<Card> eq = { to_find };
-	std::vector<Card *>::iterator it = std::find_if(hand_.begin(), hand_.end(), eq);
+void Player::removeCard(Card* card){
+	std::vector<Card *>::iterator it = std::find(hand_.begin(), hand_.end(), card);
 	discarded_.push_back(*it); // Not sure if the syntax work
 	hand_.erase(it);
-	delete to_find;
 }
 
 void Player::discardHand(){

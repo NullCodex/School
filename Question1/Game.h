@@ -24,6 +24,7 @@ public:
 	void outputWinners() const;
 	void updatePossiblePlays();
 private:
+	Card* getCardReference(Card);
 	void determineFirstPlayer();
 	int firstPlayer_;
 	Deck deck_;

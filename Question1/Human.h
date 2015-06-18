@@ -7,14 +7,14 @@ class Human : public Player{
 public:
 	class InvalidCardException{
 	public:
-		InvalidCardException(Card card) : card_(card){}
+		InvalidCardException(Card* card) : card_(*card){}
 		Card card() const{ return card_; }
 	private:
 		Card card_;
 	};
 	class CanPlayCardException{
 	public:
-		CanPlayCardException(Card card) : card_(card){}
+		CanPlayCardException(Card* card) : card_(*card){}
 		Card card() const{ return card_; }
 	private:
 		Card card_;
@@ -23,8 +23,8 @@ public:
 	~Human();
 	void action();
 	void legalPlays(std::unordered_set <Card*>);
-	void discardCard(Card&, std::unordered_set<Card*>);
-	void playCard(Card, std::unordered_set<Card*>);
+	void discardCard(Card*, std::unordered_set<Card*>);
+	void playCard(Card*, std::unordered_set<Card*>);
 private:
 
 };

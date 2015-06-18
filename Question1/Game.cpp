@@ -21,6 +21,7 @@ Game::~Game(){
 void Game::newRound(){
 	table_.clear();
 	deck_.shuffle();
+	possiblePlays_.clear();
 	for (int i = 0; i < players_.size(); i++){
 		players_[i]->discardHand();
 		players_[i]->newHand(i, deck_);
@@ -54,9 +55,10 @@ void Game::nextTurn(){
 				std::cin >> c;
 				if (c.type == PLAY){
 					try{
+						Card* card = getCardReference(c.card);
 						Human* human = dynamic_cast<Human*>(players_[curPlayer]);
-						human->playCard(c.card, possiblePlays_);
-						table_.placeCard(&c.card);
+						human->playCard(card, possiblePlays_);
+						table_.placeCard(card);
 					}
 					catch (Human::InvalidCardException &e){
 						std::cout << "This is not a legal play." << std::endl;
@@ -65,8 +67,9 @@ void Game::nextTurn(){
 				}
 				else if (c.type == DISCARD){
 					try{
+						Card* card = getCardReference(c.card);
 						Human* human = dynamic_cast<Human*>(players_[curPlayer]);
-						human->discardCard(c.card, possiblePlays_);
+						human->discardCard(card, possiblePlays_);
 					}
 					catch (Human::CanPlayCardException &e){
 						std::cout << "You have a legal play. You may not discard." << std::endl;
@@ -93,10 +96,19 @@ void Game::nextTurn(){
 			std::cout << "Player " << curPlayer << " ";
 			players_[curPlayer]->legalPlays(possiblePlays_);
 		}
-		(curPlayer += 1) % 4;
+		curPlayer = (curPlayer + 1) % 4;
 	}
 }
 
+Card* Game::getCardReference(Card card){
+	Card* cardReference = NULL;
+	for (int i = 0; i < 52; i++){
+		if (*deck_.getCard(i) == card){
+			cardReference = deck_.getCard(i);
+			return cardReference;
+		}
+	}
+}
 void Game::outputCurrentTable() const{
 	std::cout << "Cards on the table:\n" << table_;
 }
@@ -139,34 +151,26 @@ void Game::outputWinners() const{
 void Game::updatePossiblePlays(){
 	Card* card = table_.lastCardPlayed();
 	if (card==NULL){
-		return;
+		for (int i = 0; i < 52; i++){
+			if (*deck_.getCard(i) == Card(SPADE, SEVEN)){
+				possiblePlays_.insert(deck_.getCard(i));
+				return;
+			}
+		}
 	}
 	std::vector <Card*> possiblePlays;
-	for (int i = 0; i < 4; i++){
-		Card temp = Card((Suit)i, card->getRank());
-		possiblePlays.push_back(&temp);
+	for (int i = 0; i < 52; i++){
+		if (deck_.getCard(i)->getRank() == card->getRank()){
+			possiblePlays.push_back(deck_.getCard(i));
+		}
+		else if (deck_.getCard(i)->getSuit() == card->getSuit()){
+			if (abs(deck_.getCard(i)->getRank() - card->getRank()) == 1){
+				possiblePlays.push_back(deck_.getCard(i));
+			}
+		}
 	}
-	if (card->getSuit() == ACE){
-		Card temp = Card(card->getSuit(), Rank(1));
-		possiblePlays.push_back(&temp);
-	}
-	else if (card->getSuit() == KING){
-		Card temp = Card(card->getSuit(), Rank(11));
-		possiblePlays.push_back(&temp);
-	}
-	else{
-		Card temp = Card(card->getSuit(), (Rank)(card->getRank()-1));
-		possiblePlays.push_back(&temp);
-		Card temp2 = Card(card->getSuit(), (Rank)(card->getRank() + 1));
-		possiblePlays.push_back(&temp2);
-	}
+	
 	for (int i = 0; i < possiblePlays.size(); i++){
-		if (possiblePlays_.find(possiblePlays[i]) == possiblePlays_.end()){
-			possiblePlays_.insert(possiblePlays[i]);
-		}
-		else{
-			delete possiblePlays[i]; //gets rid of duplicates from memory
-		}
-		
+		possiblePlays_.insert(possiblePlays[i]);		
 	}
 }
