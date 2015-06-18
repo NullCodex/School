@@ -19,6 +19,8 @@ public:
 	void currentScore() const;
 	bool winnerExists() const;
 	bool hasQuit() const;
+	void endRound();
+	void outputWinners() const;
 private:
 	void determineFirstPlayer();
 	int firstPlayer_;

@@ -1,5 +1,6 @@
 #include "Deck.h"
 #include <vector>
+#include <iostream>
 
 class Player{
 public:
@@ -27,11 +28,13 @@ public:
 	void removeCard(Card&);
 	void playCard(Card, Card*);
 	bool isLegalPlay(Card, Card*); //Check if the card being played is a valid play given the top card on the table
+	void outputDiscardList() const;
 	void discardHand();
 	Card* findCard(Suit, Rank);
 	void newHand(int, Deck);
 	int getScore() const; // Return the score
-	int roundScore() const;  // Return the current score so we can do oldscore + new score
+	int valueOfDiscarded() const;
+	void updateScore();
 protected:
 	std::vector <Card*> hand_; //should only point to cards created by Deck
 	int score_; // Each player should have a score variable to keep track of the current scoring

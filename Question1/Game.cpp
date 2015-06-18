@@ -109,3 +109,22 @@ bool Game::winnerExists() const // function to check we have a winnder
 bool Game::hasQuit() const{
 	return quit_;
 }
+
+void Game::endRound() {
+	for (int i = 0; i < players_.size(); i++){
+		std::cout << "Player " << (i + 1) << "'s discards :";
+		players_[i].outputDiscardList();
+		std::cout << "Player " << (i + 1) << "'s score : " << players_[i].getScore() << " + " << players_[i].valueOfDiscarded() <<
+			" = " << (players_[i].getScore() + players_[i].valueOfDiscarded()) << std::endl;
+		players_[i].updateScore();
+	}
+
+}
+
+void Game::outputWinners() const{
+	for (int i = 0; i < players_.size(); i++){
+		if (players_[i].getScore() >= 80){
+			std::cout << "Player " << (i + 1) << " wins!\n";
+		}
+	}
+}

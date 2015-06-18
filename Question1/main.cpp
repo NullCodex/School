@@ -26,13 +26,14 @@ int main(int argc, char* argv){
 	
 	Game game(inputs, seed);
 	
-	while (true){ //GAME NOT DONE (call function that checks if a players score has reached 80 and hasn't quit
+	while (!game.winnerExists() && !game.hasQuit()){ //GAME NOT DONE (call function that checks if a players score has reached 80 and hasn't quit
 		game.newRound();
-		//NEED TO DEAL WITH PLAYER QUITTING
-		while (true && !game.hasQuit()){ //ROUND NOT DONE (do for loop 13 times? do for loop HAND_SIZE times? (using a constant var)) 
+		for (int i = 0; i < 13 && !game.hasQuit(); i++){
 			game.nextTurn();
 		}
-		//update scores if player hasnt quit
-
+		game.endRound();
+	}
+	if (!game.hasQuit()){
+		game.outputWinners();
 	}
 }

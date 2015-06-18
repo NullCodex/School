@@ -95,3 +95,21 @@ void Player::discardCard(Card& card, Card* lastCard){
 	}
 	removeCard(card);
 }
+
+void Player::outputDiscardList() const {
+	for (int i = 0; i < discarded_.size(); i++){
+		std::cout << " " << discarded_[i];
+	}
+}
+
+int Player::valueOfDiscarded() const {
+	int value = 0;
+	for (int i = 0; i < discarded_.size(); i++){
+		value += discarded_[i]->getRank() +  1;
+	}
+	return value;
+}
+
+void Player::updateScore(){
+	score_ = getScore() + valueOfDiscarded();
+}
