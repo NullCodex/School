@@ -13,7 +13,6 @@ public:
 private:
 	std::vector <Card*> cards_;
 	int seed_;
-
 };
 
 std::ostream &operator<< (std::ostream &, const Deck &);

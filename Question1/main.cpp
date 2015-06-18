@@ -8,14 +8,15 @@
 #include "Game.h"
 #include <vector>
 #include <iostream>
+#include <cstdlib> 
 using namespace std;
-int main(int argc, char* argv){
+int main(int argc, char *argv[]){
 	vector <char> inputs;
 	Table table;
 	int seed=0;
 	int playerTurn;
 	if (argc > 1){
-		seed = argv[0];
+		seed = atoi(argv[1]);
 	}
 	for (int i = 0; i < 4; i++){
 		cout << "Is player " << (i+1) << " a human (h) or a computer (c)?" << endl;

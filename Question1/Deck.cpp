@@ -14,7 +14,7 @@ Deck::~Deck(){
 	}
 }
 void Deck::shuffle(){
-	std::mt19937 rng (seed_);
+	static std::mt19937 rng (seed_);
 	int n = Card::CARD_COUNT;
 
 	while (n > 1) {
