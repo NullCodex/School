@@ -15,7 +15,7 @@ int main(int argc, char* argv){
 	int seed;
 	int playerTurn;
 	if (argc > 0){
-		seed = argv[1];
+		seed = argv[0];
 	}
 	for (int i = 0; i < 4; i++){
 		cout << "Is player " << (i+1) << " a human (h) or a computer (c)?" << endl;
@@ -36,4 +36,6 @@ int main(int argc, char* argv){
 	if (!game.hasQuit()){
 		game.outputWinners();
 	}
+	int s;
+	cin >> s;
 }

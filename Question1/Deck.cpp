@@ -1,11 +1,10 @@
 #include "Deck.h"
-#include <random>
 
 
-Deck::Deck(int seed_){
-	seed = seed_;
+Deck::Deck(int seed){
+	seed_ = seed;
 	for (int i = 0; i < 52; i++){
-		cards_[i] = new Card(Suit(i/4), Rank(i%13));
+		cards_.push_back(new Card(Suit(i/13), Rank(i%13)));
 	}
 }
 
@@ -15,8 +14,7 @@ Deck::~Deck(){
 	}
 }
 void Deck::shuffle(){
-	static std::mt19937 rng(seed);
-
+	std::mt19937 rng (seed_);
 	int n = Card::CARD_COUNT;
 
 	while (n > 1) {

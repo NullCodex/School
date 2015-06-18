@@ -1,7 +1,8 @@
 #include "Game.h"
 #include <iostream>
+#include <typeinfo>
 
-Game::Game(std::vector<char> players, int seed) : deck_(seed){
+Game::Game(std::vector<char> players, int seed) : deck_(seed), playerTypes_(players){
 	quit_ = false;
 	for (int i = 0; i < players.size(); i++){
 		if (players[i] == 'h'){
@@ -40,11 +41,11 @@ void Game::determineFirstPlayer(){
 void Game::nextTurn(){
 	int curPlayer = firstPlayer_;
 	for (int i = 0; i < players_.size() && !quit_; i++){
-		if (typeid(players_[curPlayer]) == typeid(Human())){
+		if (playerTypes_[curPlayer] == 'h'){
 			Command c;
 			outputCurrentTable();
-			std::cout << "Your hand: " << players_[curPlayer] << std::endl;
-			std::cout << "Legal plays: ";
+			std::cout << "Your hand:" << *players_[curPlayer] << std::endl;
+			std::cout << "Legal plays:";
 			players_[curPlayer]->legalPlays(table_.lastCardPlayed());
 			std::cout << "\n";
 			c.type = DECK;
@@ -93,6 +94,7 @@ void Game::nextTurn(){
 			std::cout << "Player " << curPlayer << " ";
 			players_[curPlayer]->legalPlays(table_.lastCardPlayed());
 		}
+		(curPlayer += 1) % 4;
 	}
 }
 

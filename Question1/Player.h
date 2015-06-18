@@ -17,7 +17,7 @@ public:
 	void outputDiscardList() const;
 	void discardHand();
 	Card* findCard(Suit, Rank);
-	void newHand(int, Deck);
+	void newHand(int, Deck&);
 	int getScore() const; // Return the score
 	int valueOfDiscarded() const;
 	void updateScore();

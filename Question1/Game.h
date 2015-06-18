@@ -26,6 +26,7 @@ private:
 	int firstPlayer_;
 	Deck deck_;
 	std::vector <Player*> players_;
+	std::vector <char> playerTypes_;
 	Table table_;
 	bool quit_;
 };

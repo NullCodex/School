@@ -1,4 +1,5 @@
 #include "Player.h"
+#include <algorithm>
 
 
 Player::Player():score_(0){}
@@ -15,18 +16,29 @@ bool Player::contains(Suit s, Rank r) const{
 
 std::ostream &operator<<(std::ostream & sout, Player& p){
 	for (int i = 0; i < p.hand_.size(); i++){
-		sout << p.hand_[i];
-		if (i != 12){
-			sout << " ";
-		}
+		sout << " " << *p.hand_[i];
 	}
 	return sout;
 }
 
+template <typename T>
+struct pointer_values_equal
+{
+	const T* to_find;
+
+	bool operator()(const T* other) const
+	{
+		return *to_find == *other;
+	}
+};
+
 void Player::removeCard(Card& card){
-	std::vector<Card *>::iterator it = std::find(hand_.begin(), hand_.end(), card);
+	Card* to_find = new Card(card.getSuit(), card.getRank());
+	pointer_values_equal<Card> eq = { to_find };
+	std::vector<Card *>::iterator it = std::find_if(hand_.begin(), hand_.end(), eq);
 	discarded_.push_back(*it); // Not sure if the syntax work
 	hand_.erase(it);
+	delete to_find;
 }
 
 void Player::discardHand(){
@@ -34,7 +46,7 @@ void Player::discardHand(){
 	discarded_.clear(); // assuming that we call this function at the end of the round
 }
 
-void Player::newHand(int number, Deck d){
+void Player::newHand(int number, Deck& d){
 	for (int i = 0; i < 13; i++){
 		hand_.push_back(d.getCard(i + (number * 13)));
 	}
@@ -54,10 +66,14 @@ bool Player::isLegalPlay(Card card, Card* lastCard){
 		return false;
 	}
 	if (card.getRank() == lastCard->getRank()){
+		std::cout << "Last card is this shit: " << lastCard->getRank() << lastCard->getSuit();
+		std::cout << "Equal get ranks for " << card.getRank() << card.getSuit() << std::endl;
 		return true;
 	}
 	else if (card.getSuit() == lastCard->getSuit()){
 		if (abs(card.getRank() - lastCard->getRank()) == 1){
+			std::cout << "Last card is this shit: " << lastCard->getRank() << lastCard->getSuit();
+			std::cout << "Equal get suit and 1 diff rank for " << card.getRank() << card.getSuit() << std::endl;
 			return true;
 		}
 	}
