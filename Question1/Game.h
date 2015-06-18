@@ -2,6 +2,7 @@
 #define _GAME_
 
 #include <vector>
+#include <unordered_set>
 #include "Card.h"
 #include "Deck.h"
 #include "Computer.h"
@@ -21,12 +22,14 @@ public:
 	bool hasQuit() const;
 	void endRound();
 	void outputWinners() const;
+	void updatePossiblePlays();
 private:
 	void determineFirstPlayer();
 	int firstPlayer_;
 	Deck deck_;
 	std::vector <Player*> players_;
 	std::vector <char> playerTypes_;
+	std::unordered_set<Card *> possiblePlays_;
 	Table table_;
 	bool quit_;
 };

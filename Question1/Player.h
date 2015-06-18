@@ -3,6 +3,7 @@
 #include "Deck.h"
 #include <vector>
 #include <iostream>
+#include <unordered_set>
 
 class Player{
 public:
@@ -11,7 +12,7 @@ public:
 	bool contains(Suit, Rank) const;
 	//default destructor is fine, deck will take care of deleting card*
 	friend std::ostream &operator<<(std::ostream &, Player&);
-	virtual void legalPlays(Card*) = 0;
+	virtual void legalPlays(std::unordered_set <Card*>) = 0;
 	void removeCard(Card&);
 	bool isLegalPlay(Card, Card*); //Check if the card being played is a valid play given the top card on the table
 	void outputDiscardList() const;

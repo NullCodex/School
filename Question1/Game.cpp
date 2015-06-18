@@ -44,17 +44,18 @@ void Game::nextTurn(){
 		if (playerTypes_[curPlayer] == 'h'){
 			Command c;
 			outputCurrentTable();
+			updatePossiblePlays();
 			std::cout << "Your hand:" << *players_[curPlayer] << std::endl;
 			std::cout << "Legal plays:";
-			players_[curPlayer]->legalPlays(table_.lastCardPlayed());
+			players_[curPlayer]->legalPlays(possiblePlays_);
 			std::cout << "\n";
 			c.type = DECK;
 			while (c.type == DECK && !quit_){
 				std::cin >> c;
 				if (c.type == PLAY){
 					try{
-						Human* human = dynamic_cast<Human*>(players_[i]);
-						human->playCard(c.card, table_.lastCardPlayed());
+						Human* human = dynamic_cast<Human*>(players_[curPlayer]);
+						human->playCard(c.card, possiblePlays_);
 						table_.placeCard(&c.card);
 					}
 					catch (Human::InvalidCardException &e){
@@ -64,8 +65,8 @@ void Game::nextTurn(){
 				}
 				else if (c.type == DISCARD){
 					try{
-						Human* human = dynamic_cast<Human*>(players_[i]);
-						human->discardCard(c.card, table_.lastCardPlayed());
+						Human* human = dynamic_cast<Human*>(players_[curPlayer]);
+						human->discardCard(c.card, possiblePlays_);
 					}
 					catch (Human::CanPlayCardException &e){
 						std::cout << "You have a legal play. You may not discard." << std::endl;
@@ -86,13 +87,11 @@ void Game::nextTurn(){
 
 				}
 			}
-			
-
 		}
 		else{
 			//Do Computer player's turn
 			std::cout << "Player " << curPlayer << " ";
-			players_[curPlayer]->legalPlays(table_.lastCardPlayed());
+			players_[curPlayer]->legalPlays(possiblePlays_);
 		}
 		(curPlayer += 1) % 4;
 	}
@@ -134,5 +133,40 @@ void Game::outputWinners() const{
 		if (players_[i]->getScore() >= 80){
 			std::cout << "Player " << (i + 1) << " wins!\n";
 		}
+	}
+}
+
+void Game::updatePossiblePlays(){
+	Card* card = table_.lastCardPlayed();
+	if (card==NULL){
+		return;
+	}
+	std::vector <Card*> possiblePlays;
+	for (int i = 0; i < 4; i++){
+		Card temp = Card((Suit)i, card->getRank());
+		possiblePlays.push_back(&temp);
+	}
+	if (card->getSuit() == ACE){
+		Card temp = Card(card->getSuit(), Rank(1));
+		possiblePlays.push_back(&temp);
+	}
+	else if (card->getSuit() == KING){
+		Card temp = Card(card->getSuit(), Rank(11));
+		possiblePlays.push_back(&temp);
+	}
+	else{
+		Card temp = Card(card->getSuit(), (Rank)(card->getRank()-1));
+		possiblePlays.push_back(&temp);
+		Card temp2 = Card(card->getSuit(), (Rank)(card->getRank() + 1));
+		possiblePlays.push_back(&temp2);
+	}
+	for (int i = 0; i < possiblePlays.size(); i++){
+		if (possiblePlays_.find(possiblePlays[i]) == possiblePlays_.end()){
+			possiblePlays_.insert(possiblePlays[i]);
+		}
+		else{
+			delete possiblePlays[i]; //gets rid of duplicates from memory
+		}
+		
 	}
 }

@@ -3,8 +3,6 @@
 #include <iostream>
 void Table::placeCard(Card* card){
 	cardsOnTable_.push_back(card);
-	std::cout << *card << std::endl;
-	std::cout << "In the vector: " << *cardsOnTable_[cardsOnTable_.size()-1] << std::endl;
 	if (card->getSuit() == CLUB){
 		clubs_.insert(card->getRank() + 1); //this might not work
 	}
@@ -56,4 +54,8 @@ std::ostream &operator<<(std::ostream & sout, const Table& deck){
 	}
 	sout << "\n";
 	return sout;
+}
+
+std::vector <Card*> Table::cardsOnTable(){
+	return cardsOnTable_;
 }

@@ -66,14 +66,11 @@ bool Player::isLegalPlay(Card card, Card* lastCard){
 		return false;
 	}
 	if (card.getRank() == lastCard->getRank()){
-		std::cout << "Last card is this shit: " << lastCard->getRank() << lastCard->getSuit();
-		std::cout << "Equal get ranks for " << card.getRank() << card.getSuit() << std::endl;
+		std::cout << "Last card: " << *lastCard << std::endl;
 		return true;
 	}
 	else if (card.getSuit() == lastCard->getSuit()){
 		if (abs(card.getRank() - lastCard->getRank()) == 1){
-			std::cout << "Last card is this shit: " << lastCard->getRank() << lastCard->getSuit();
-			std::cout << "Equal get suit and 1 diff rank for " << card.getRank() << card.getSuit() << std::endl;
 			return true;
 		}
 	}

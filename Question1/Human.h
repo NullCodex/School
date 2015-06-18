@@ -1,6 +1,7 @@
 #ifndef _HUMAN_
 #define _HUMAN_
 #include "Player.h"
+#include <unordered_set>
 
 class Human : public Player{
 public:
@@ -21,9 +22,9 @@ public:
 	Human();
 	~Human();
 	void action();
-	void legalPlays(Card*);
-	void discardCard(Card&, Card*);
-	void playCard(Card, Card*);
+	void legalPlays(std::unordered_set <Card*>);
+	void discardCard(Card&, std::unordered_set<Card*>);
+	void playCard(Card, std::unordered_set<Card*>);
 private:
 
 };
