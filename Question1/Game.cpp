@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <iostream>
 #include <typeinfo>
+#include <set>
 
 Game::Game(std::vector<char> players, int seed) : deck_(seed), playerTypes_(players){
 	quit_ = false;
@@ -27,7 +28,7 @@ void Game::newRound(){
 		players_[i]->newHand(i, deck_);
 	}
 	determineFirstPlayer();
-	std::cout << "A new round begins. It's player " << firstPlayer_ << "'s turn to play." << std::endl;
+	std::cout << "A new round begins. It's player " << (firstPlayer_+1) << "'s turn to play." << std::endl;
 }
 
 void Game::determineFirstPlayer(){
@@ -42,10 +43,10 @@ void Game::determineFirstPlayer(){
 void Game::nextTurn(){
 	int curPlayer = firstPlayer_;
 	for (int i = 0; i < players_.size() && !quit_; i++){
+		updatePossiblePlays();
 		if (playerTypes_[curPlayer] == 'h'){
 			Command c;
 			outputCurrentTable();
-			updatePossiblePlays();
 			std::cout << "Your hand:" << *players_[curPlayer] << std::endl;
 			std::cout << "Legal plays:";
 			players_[curPlayer]->legalPlays(possiblePlays_);
@@ -93,8 +94,14 @@ void Game::nextTurn(){
 		}
 		else{
 			//Do Computer player's turn
-			std::cout << "Player " << curPlayer << " ";
+			Computer* computer = dynamic_cast<Computer*>(players_[curPlayer]);
+			std::cout << "Player " << (curPlayer+1) << " ";
 			players_[curPlayer]->legalPlays(possiblePlays_);
+			Card* card = computer->getLastCardPlayed();
+			if (card != NULL){
+				table_.placeCard(card);
+			}
+			
 		}
 		curPlayer = (curPlayer + 1) % 4;
 	}
@@ -108,6 +115,7 @@ Card* Game::getCardReference(Card card){
 			return cardReference;
 		}
 	}
+	return cardReference;
 }
 void Game::outputCurrentTable() const{
 	std::cout << "Cards on the table:\n" << table_;
@@ -141,8 +149,12 @@ void Game::endRound() {
 }
 
 void Game::outputWinners() const{
+	std::set<int> scores;
 	for (int i = 0; i < players_.size(); i++){
-		if (players_[i]->getScore() >= 80){
+		scores.insert(players_[i]->getScore());
+	}
+	for (int i = 0; i < players_.size(); i++){
+		if (*scores.begin() == players_[i]->getScore()){
 			std::cout << "Player " << (i + 1) << " wins!\n";
 		}
 	}

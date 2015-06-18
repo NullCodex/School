@@ -9,8 +9,10 @@ public:
 	~Computer();
 	Computer(Player*);
 	void legalPlays(std::unordered_set <Card*>);
-	void discardCard(Card&, Card*);
+	Card* getLastCardPlayed();
 private:
+	Card* lastCardPlayed_;
+	void playCard(Card*);
 };
 
 #endif

@@ -21,7 +21,6 @@ public:
 	};
 	Human();
 	~Human();
-	void action();
 	void legalPlays(std::unordered_set <Card*>);
 	void discardCard(Card*, std::unordered_set<Card*>);
 	void playCard(Card*, std::unordered_set<Card*>);

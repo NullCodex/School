@@ -12,9 +12,9 @@ using namespace std;
 int main(int argc, char* argv){
 	vector <char> inputs;
 	Table table;
-	int seed;
+	int seed=0;
 	int playerTurn;
-	if (argc > 0){
+	if (argc > 1){
 		seed = argv[0];
 	}
 	for (int i = 0; i < 4; i++){
@@ -31,11 +31,11 @@ int main(int argc, char* argv){
 		for (int i = 0; i < 13 && !game.hasQuit(); i++){
 			game.nextTurn();
 		}
-		game.endRound();
+		if (!game.hasQuit()){
+			game.endRound();
+		}
 	}
 	if (!game.hasQuit()){
 		game.outputWinners();
 	}
-	int s;
-	cin >> s;
 }

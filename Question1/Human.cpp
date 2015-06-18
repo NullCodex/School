@@ -25,7 +25,7 @@ void Human::discardCard(Card* card, std::unordered_set<Card*> cards){
 			throw CanPlayCardException(card);
 		}
 	}
-	removeCard(card);
+	Player::discardCard(card);
 }
 
 template <typename T>
@@ -50,6 +50,5 @@ void Human::playCard(Card* card, std::unordered_set<Card*> cards){
 	Card* to_find = new Card(card->getSuit(), card->getRank());
 	pointer_values_equal<Card> eq = { to_find };
 	std::vector<Card *>::iterator it = std::find_if(hand_.begin(), hand_.end(), eq);
-	std::cout << "Iterator is pointing to " << **it << std::endl;
 	hand_.erase(it); //remove card from hand
 }

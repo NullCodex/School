@@ -21,9 +21,9 @@ std::ostream &operator<<(std::ostream & sout, Player& p){
 	return sout;
 }
 
-void Player::removeCard(Card* card){
+void Player::discardCard(Card* card){
 	std::vector<Card *>::iterator it = std::find(hand_.begin(), hand_.end(), card);
-	discarded_.push_back(*it); // Not sure if the syntax work
+	discarded_.push_back(*it);
 	hand_.erase(it);
 }
 
@@ -67,8 +67,9 @@ bool Player::isLegalPlay(Card card, Card* lastCard){
 
 void Player::outputDiscardList() const {
 	for (int i = 0; i < discarded_.size(); i++){
-		std::cout << " " << discarded_[i];
+		std::cout << " " << *discarded_[i];
 	}
+	std::cout << std::endl;
 }
 
 int Player::valueOfDiscarded() const {
