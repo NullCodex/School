@@ -1,6 +1,7 @@
 #include "Computer.h"
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 
 Computer::Computer():Player() {} // Use player constructor to set score

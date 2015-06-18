@@ -14,7 +14,7 @@ SOURCES = *.cpp
 all: $(TARGET)
 
 $(TARGET):
-	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET)
+	$(CC) $(CFLAGS) $(VERSION) $(SOURCES) -o $(TARGET)
 
 clean:
 	$(RM) $(TARGET)
