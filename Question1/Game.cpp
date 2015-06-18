@@ -53,6 +53,7 @@ void Game::nextTurn(){
 			std::cout << "\n";
 			c.type = DECK;
 			while (c.type == DECK && !quit_){
+				std::cout << ">";
 				std::cin >> c;
 				if (c.type == PLAY){
 					try{
