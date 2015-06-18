@@ -3,7 +3,7 @@
 #include <vector>
 
 Computer::Computer():Player() {} // Use player constructor to set score
-
+Computer::Computer(Player* player) : Player(*player){}
 void Computer::legalPlays(Card* card){
 	if (card == NULL){
 		std::cout << "plays 7S.\n";

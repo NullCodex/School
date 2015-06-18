@@ -25,7 +25,7 @@ private:
 	void determineFirstPlayer();
 	int firstPlayer_;
 	Deck deck_;
-	std::vector <Player> players_;
+	std::vector <Player*> players_;
 	Table table_;
 	bool quit_;
 };

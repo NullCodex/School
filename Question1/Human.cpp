@@ -30,3 +30,27 @@ void Human::legalPlays(Card* card){
 		}
 	}
 }
+
+
+void Human::discardCard(Card& card, Card* lastCard){
+	for (int i = 0; i < hand_.size(); i++){
+		if (isLegalPlay(card, lastCard)){
+			throw CanPlayCardException(card);
+		}
+	}
+	removeCard(card);
+}
+
+
+void Human::playCard(Card card, Card* lastCard){
+	if (!contains(card.getSuit(), card.getRank())){ //Card must be in your hand before you play it
+		throw InvalidCardException(card);
+	}
+	//Check if the play is legal
+	if (!isLegalPlay(card, lastCard)){
+		throw InvalidCardException(card);
+	}
+	std::vector<Card *>::iterator it = std::find(hand_.begin(), hand_.end(), card);
+	hand_.erase(it); //remove card from hand
+
+}

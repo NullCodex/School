@@ -45,28 +45,6 @@ int Player::getScore() const
 	return score_;
 }
 
-int Player::roundScore() const // Grab the score for the currrent round
-{
-	int sum = 0;
-	for(int i = 0; i < discarded_.size(); i++)
-	{
-		sum += discarded_[i]->getRank+1;
-	}
-	return sum;
-}
-
-void Player::playCard(Card card, Card* lastCard){
-	if (!contains(card.getSuit(), card.getRank())){ //Card must be in your hand before you play it
-		throw InvalidCardException(card);
-	}
-	//Check if the play is legal
-	if (!isLegalPlay(card, lastCard)){
-		throw InvalidCardException(card);
-	}
-	std::vector<Card *>::iterator it = std::find(hand_.begin(), hand_.end(), card);
-	hand_.erase(it); //remove card from hand
-	
-}
 
 bool Player::isLegalPlay(Card card, Card* lastCard){
 	if (lastCard == NULL){
@@ -87,14 +65,6 @@ bool Player::isLegalPlay(Card card, Card* lastCard){
 }
 
 
-void Player::discardCard(Card& card, Card* lastCard){
-	for (int i = 0; i < hand_.size(); i++){
-		if (isLegalPlay(card, lastCard)){
-			throw CanPlayCardException(card);
-		}
-	}
-	removeCard(card);
-}
 
 void Player::outputDiscardList() const {
 	for (int i = 0; i < discarded_.size(); i++){

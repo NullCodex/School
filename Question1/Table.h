@@ -1,3 +1,5 @@
+#ifndef _TABLE_
+#define _TABLE_
 #include "Card.h"
 #include <vector>
 #include <set>
@@ -17,3 +19,5 @@ private:
 };
 
 std::ostream &operator<<(std::ostream &, const Table &);
+
+#endif

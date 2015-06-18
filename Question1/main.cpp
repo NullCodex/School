@@ -26,7 +26,7 @@ int main(int argc, char* argv){
 	
 	Game game(inputs, seed);
 	
-	while (!game.winnerExists() && !game.hasQuit()){ //GAME NOT DONE (call function that checks if a players score has reached 80 and hasn't quit
+	while (!game.winnerExists() && !game.hasQuit()){ 
 		game.newRound();
 		for (int i = 0; i < 13 && !game.hasQuit(); i++){
 			game.nextTurn();

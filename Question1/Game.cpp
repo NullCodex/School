@@ -5,20 +5,24 @@ Game::Game(std::vector<char> players, int seed) : deck_(seed){
 	quit_ = false;
 	for (int i = 0; i < players.size(); i++){
 		if (players[i] == 'h'){
-			players_.push_back(Human());
+			players_.push_back((Player*)new Human());
 		}
 		else{
-			players_.push_back(Computer());
+			players_.push_back(new Computer());
 		}
 	}
 }
-
+Game::~Game(){
+	for (int i = 0; i < players_.size(); i++){
+		delete players_[i];
+	}
+}
 void Game::newRound(){
 	table_.clear();
 	deck_.shuffle();
 	for (int i = 0; i < players_.size(); i++){
-		players_[i].discardHand();
-		players_[i].newHand(i, deck_);
+		players_[i]->discardHand();
+		players_[i]->newHand(i, deck_);
 	}
 	determineFirstPlayer();
 	std::cout << "A new round begins. It's player " << firstPlayer_ << "'s turn to play." << std::endl;
@@ -26,7 +30,7 @@ void Game::newRound(){
 
 void Game::determineFirstPlayer(){
 	for (int i = 0; i < players_.size(); i++){
-		if (players_[i].contains(SPADE, SEVEN)){
+		if (players_[i]->contains(SPADE, SEVEN)){
 			firstPlayer_ = i;
 			break;
 		}
@@ -41,28 +45,30 @@ void Game::nextTurn(){
 			outputCurrentTable();
 			std::cout << "Your hand: " << players_[curPlayer] << std::endl;
 			std::cout << "Legal plays: ";
-			players_[curPlayer].legalPlays(table_.lastCardPlayed());
+			players_[curPlayer]->legalPlays(table_.lastCardPlayed());
 			std::cout << "\n";
 			c.type = DECK;
 			while (c.type == DECK && !quit_){
 				std::cin >> c;
 				if (c.type == PLAY){
 					try{
-						players_[curPlayer].playCard(c.card, table_.lastCardPlayed());
+						Human* human = dynamic_cast<Human*>(players_[i]);
+						human->playCard(c.card, table_.lastCardPlayed());
 						table_.placeCard(&c.card);
 					}
-					catch (Player::InvalidCardException &e){
+					catch (Human::InvalidCardException &e){
 						std::cout << "This is not a legal play." << std::endl;
-						c.type == DECK;
+						c.type = DECK;
 					}
 				}
 				else if (c.type == DISCARD){
 					try{
-						players_[curPlayer].discardCard(c.card, table_.lastCardPlayed());
+						Human* human = dynamic_cast<Human*>(players_[i]);
+						human->discardCard(c.card, table_.lastCardPlayed());
 					}
-					catch (Player::CanPlayCardException &e){
+					catch (Human::CanPlayCardException &e){
 						std::cout << "You have a legal play. You may not discard." << std::endl;
-						c.type == DECK;
+						c.type = DECK;
 					}
 				}
 				else if (c.type == DECK){
@@ -73,7 +79,7 @@ void Game::nextTurn(){
 				}
 				else{
 					//ragequit
-					players_[curPlayer] = Computer();
+					//players_[curPlayer] = Computer(players_[curPlayer]);
 					// Want to make game a friend of both computer and human?
 					// Need to transfer the ownership of cards to Computer.
 
@@ -85,7 +91,7 @@ void Game::nextTurn(){
 		else{
 			//Do Computer player's turn
 			std::cout << "Player " << curPlayer << " ";
-			players_[curPlayer].legalPlays(table_.lastCardPlayed());
+			players_[curPlayer]->legalPlays(table_.lastCardPlayed());
 		}
 	}
 }
@@ -98,7 +104,7 @@ bool Game::winnerExists() const // function to check we have a winnder
 {
 	for(int i = 0; i < players_.size(); i++)
 	{
-		if(players_[i].getScore >= 80)
+		if(players_[i]->getScore() >= 80)
 		{
 			return true;
 		}
@@ -113,17 +119,17 @@ bool Game::hasQuit() const{
 void Game::endRound() {
 	for (int i = 0; i < players_.size(); i++){
 		std::cout << "Player " << (i + 1) << "'s discards :";
-		players_[i].outputDiscardList();
-		std::cout << "Player " << (i + 1) << "'s score : " << players_[i].getScore() << " + " << players_[i].valueOfDiscarded() <<
-			" = " << (players_[i].getScore() + players_[i].valueOfDiscarded()) << std::endl;
-		players_[i].updateScore();
+		players_[i]->outputDiscardList();
+		std::cout << "Player " << (i + 1) << "'s score : " << players_[i]->getScore() << " + " << players_[i]->valueOfDiscarded() <<
+			" = " << (players_[i]->getScore() + players_[i]->valueOfDiscarded()) << std::endl;
+		players_[i]->updateScore();
 	}
 
 }
 
 void Game::outputWinners() const{
 	for (int i = 0; i < players_.size(); i++){
-		if (players_[i].getScore() >= 80){
+		if (players_[i]->getScore() >= 80){
 			std::cout << "Player " << (i + 1) << " wins!\n";
 		}
 	}

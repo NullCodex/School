@@ -44,4 +44,5 @@ std::ostream &operator<< (std::ostream & sout, const Deck & deck){
 			sout << " " << deck.cards_[i];
 		}
 	}
+	return sout;
 }
