@@ -11,7 +11,7 @@ void Human::legalPlays(std::unordered_set <Card*> cards){
 		std::cout << " 7S";
 		return;
 	}
-	for (int i = 0; i < hand_.size(); i++){
+	for (unsigned int i = 0; i < hand_.size(); i++){
 		if (cards.find(hand_[i]) != cards.end()){
 			std::cout << " " << *hand_[i];
 		}
@@ -20,7 +20,7 @@ void Human::legalPlays(std::unordered_set <Card*> cards){
 
 
 void Human::discardCard(Card* card, std::unordered_set<Card*> cards){
-	for (int i = 0; i < hand_.size(); i++){
+	for (unsigned int i = 0; i < hand_.size(); i++){
 		if (cards.find(card) != cards.end()){
 			throw CanPlayCardException(card);
 		}

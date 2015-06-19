@@ -12,9 +12,7 @@
 using namespace std;
 int main(int argc, char *argv[]){
 	vector <char> inputs;
-	Table table;
 	int seed=0;
-	int playerTurn;
 	if (argc > 1){
 		seed = atoi(argv[1]);
 	}

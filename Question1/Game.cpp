@@ -5,7 +5,7 @@
 
 Game::Game(std::vector<char> players, int seed) : deck_(seed), playerTypes_(players){
 	quit_ = false;
-	for (int i = 0; i < players.size(); i++){
+	for (unsigned int i = 0; i < players.size(); i++){
 		if (players[i] == 'h'){
 			players_.push_back(new Human());
 		}
@@ -15,7 +15,7 @@ Game::Game(std::vector<char> players, int seed) : deck_(seed), playerTypes_(play
 	}
 }
 Game::~Game(){
-	for (int i = 0; i < players_.size(); i++){
+	for (unsigned int i = 0; i < players_.size(); i++){
 		delete players_[i];
 	}
 }
@@ -23,7 +23,7 @@ void Game::newRound(){
 	table_.clear();
 	possiblePlays_.clear();
 	deck_.shuffle();
-	for (int i = 0; i < players_.size(); i++){
+	for (unsigned int i = 0; i < players_.size(); i++){
 		players_[i]->discardHand();
 		players_[i]->newHand(i, deck_);
 	}
@@ -32,7 +32,7 @@ void Game::newRound(){
 }
 
 void Game::determineFirstPlayer(){
-	for (int i = 0; i < players_.size(); i++){
+	for (unsigned int i = 0; i < players_.size(); i++){
 		if (players_[i]->contains(SPADE, SEVEN)){
 			firstPlayer_ = i;
 			break;
@@ -42,7 +42,7 @@ void Game::determineFirstPlayer(){
 
 void Game::nextTurn(){
 	int curPlayer = firstPlayer_;
-	for (int i = 0; i < players_.size() && !quit_; i++){
+	for (unsigned int i = 0; i < players_.size() && !quit_; i++){
 		updatePossiblePlays();
 		if (playerTypes_[curPlayer] == 'h'){
 			Command c;
@@ -131,7 +131,7 @@ void Game::outputCurrentTable() const{
 
 bool Game::winnerExists() const // function to check we have a winnder
 {
-	for(int i = 0; i < players_.size(); i++)
+	for(unsigned int i = 0; i < players_.size(); i++)
 	{
 		if(players_[i]->getScore() >= 80)
 		{
@@ -146,7 +146,7 @@ bool Game::hasQuit() const{
 }
 
 void Game::endRound() {
-	for (int i = 0; i < players_.size(); i++){
+	for (unsigned int i = 0; i < players_.size(); i++){
 		std::cout << "Player " << (i + 1) << "'s discards:";
 		players_[i]->outputDiscardList();
 		std::cout << "Player " << (i + 1) << "'s score: " << players_[i]->getScore() << " + " << players_[i]->valueOfDiscarded() <<
@@ -158,10 +158,10 @@ void Game::endRound() {
 
 void Game::outputWinners() const{
 	std::set<int> scores;
-	for (int i = 0; i < players_.size(); i++){
+	for (unsigned int i = 0; i < players_.size(); i++){
 		scores.insert(players_[i]->getScore());
 	}
-	for (int i = 0; i < players_.size(); i++){
+	for (unsigned int i = 0; i < players_.size(); i++){
 		if (*scores.begin() == players_[i]->getScore()){
 			std::cout << "Player " << (i + 1) << " wins!\n";
 		}
@@ -171,7 +171,7 @@ void Game::outputWinners() const{
 void Game::updatePossiblePlays(){
 	Card* card = table_.lastCardPlayed();
 	if (card==NULL){
-		for (int i = 0; i < 52; i++){
+		for (unsigned int i = 0; i < 52; i++){
 			if (*deck_.getCard(i) == Card(SPADE, SEVEN)){
 				possiblePlays_.insert(deck_.getCard(i));
 				return;
@@ -194,7 +194,7 @@ void Game::updatePossiblePlays(){
 		}
 	}
 	
-	for (int i = 0; i < possiblePlays.size(); i++){
+	for (unsigned int i = 0; i < possiblePlays.size(); i++){
 		possiblePlays_.insert(possiblePlays[i]);		
 	}
 }

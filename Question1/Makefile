@@ -8,7 +8,7 @@ CFLAGS  = -g -Wall
 VERSION = -std=c++0x
 
 # the build target executable:
-TARGET = Straights
+TARGET = straights
 SOURCES = *.cpp
 
 all: $(TARGET)
