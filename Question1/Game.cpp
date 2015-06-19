@@ -194,7 +194,7 @@ void Game::updatePossiblePlays(){
 		}
 	}
 	
-	for (unsigned int i = 0; i < possiblePlays.size(); i++){
+	for (unsigned int i = 0; i < (unsigned)possiblePlays.size(); i++){
 		possiblePlays_.insert(possiblePlays[i]);		
 	}
 }
