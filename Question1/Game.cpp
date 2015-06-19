@@ -91,6 +91,7 @@ void Game::nextTurn(){
 					std::cout << "Player " << (curPlayer + 1) << " ragequits. A computer will now take over." << std::endl;
 					playerTypes_[curPlayer] = 'c';
 					curPlayer--;
+					i--;
 					// Want to make game a friend of both computer and human?
 					// Need to transfer the ownership of cards to Computer.
 
@@ -175,12 +176,16 @@ void Game::updatePossiblePlays(){
 			}
 		}
 	}
+	else if (card->getSuit() == SPADE && card->getRank() == SEVEN){
+		for (int i = 0; i < 52; i++){
+			if (deck_.getCard(i)->getRank() == SEVEN){
+				possiblePlays_.insert(deck_.getCard(i));
+			}
+		}
+	}
 	std::vector <Card*> possiblePlays;
 	for (int i = 0; i < 52; i++){
-		if (deck_.getCard(i)->getRank() == card->getRank()){
-			possiblePlays.push_back(deck_.getCard(i));
-		}
-		else if (deck_.getCard(i)->getSuit() == card->getSuit()){
+		if (deck_.getCard(i)->getSuit() == card->getSuit()){
 			if (abs(deck_.getCard(i)->getRank() - card->getRank()) == 1){
 				possiblePlays.push_back(deck_.getCard(i));
 			}
