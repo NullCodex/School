@@ -28,16 +28,6 @@ void Human::discardCard(Card* card, std::unordered_set<Card*> cards){
 	Player::discardCard(card);
 }
 
-template <typename T>
-struct pointer_values_equal
-{
-	const T* to_find;
-
-	bool operator()(const T* other) const
-	{
-		return *to_find == *other;
-	}
-};
 
 void Human::playCard(Card* card, std::unordered_set<Card*> cards){
 	if (!contains(card->getSuit(), card->getRank())){ //Card must be in your hand before you play it
@@ -47,8 +37,6 @@ void Human::playCard(Card* card, std::unordered_set<Card*> cards){
 	if (cards.find(card) == cards.end()){
 		throw InvalidCardException(card);
 	}
-	Card* to_find = new Card(card->getSuit(), card->getRank());
-	pointer_values_equal<Card> eq = { to_find };
-	std::vector<Card *>::iterator it = std::find_if(hand_.begin(), hand_.end(), eq);
+	std::vector<Card *>::iterator it = std::find(hand_.begin(), hand_.end(), card);
 	hand_.erase(it); //remove card from hand
 }
