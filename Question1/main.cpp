@@ -19,7 +19,7 @@ int main(int argc, char *argv[]){
 		seed = atoi(argv[1]);
 	}
 	for (int i = 0; i < 4; i++){
-		cout << "Is player " << (i+1) << " a human (h) or a computer (c)?" << endl;
+		cout << "Is player " << (i+1) << " a human(h) or a computer(c)?" << endl;
 		char temp;
 		std::cout << ">";
 		cin >> temp;

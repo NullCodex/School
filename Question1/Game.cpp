@@ -7,7 +7,7 @@ Game::Game(std::vector<char> players, int seed) : deck_(seed), playerTypes_(play
 	quit_ = false;
 	for (int i = 0; i < players.size(); i++){
 		if (players[i] == 'h'){
-			players_.push_back((Player*)new Human());
+			players_.push_back(new Human());
 		}
 		else{
 			players_.push_back(new Computer());
@@ -21,8 +21,8 @@ Game::~Game(){
 }
 void Game::newRound(){
 	table_.clear();
-	deck_.shuffle();
 	possiblePlays_.clear();
+	deck_.shuffle();
 	for (int i = 0; i < players_.size(); i++){
 		players_[i]->discardHand();
 		players_[i]->newHand(i, deck_);
