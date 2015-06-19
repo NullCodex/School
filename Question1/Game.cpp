@@ -60,6 +60,7 @@ void Game::nextTurn(){
 						Card* card = getCardReference(c.card);
 						Human* human = dynamic_cast<Human*>(players_[curPlayer]);
 						human->playCard(card, possiblePlays_);
+						std::cout << "Player " << (curPlayer + 1) << " plays " << *card << "." << std::endl;
 						table_.placeCard(card);
 					}
 					catch (Human::InvalidCardException &e){
@@ -72,6 +73,7 @@ void Game::nextTurn(){
 						Card* card = getCardReference(c.card);
 						Human* human = dynamic_cast<Human*>(players_[curPlayer]);
 						human->discardCard(card, possiblePlays_);
+						std::cout << "Player " << (curPlayer + 1) << " discards " << *card << "." << std::endl;
 					}
 					catch (Human::CanPlayCardException &e){
 						std::cout << "You have a legal play. You may not discard." << std::endl;
@@ -145,9 +147,9 @@ bool Game::hasQuit() const{
 
 void Game::endRound() {
 	for (int i = 0; i < players_.size(); i++){
-		std::cout << "Player " << (i + 1) << "'s discards :";
+		std::cout << "Player " << (i + 1) << "'s discards:";
 		players_[i]->outputDiscardList();
-		std::cout << "Player " << (i + 1) << "'s score : " << players_[i]->getScore() << " + " << players_[i]->valueOfDiscarded() <<
+		std::cout << "Player " << (i + 1) << "'s score: " << players_[i]->getScore() << " + " << players_[i]->valueOfDiscarded() <<
 			" = " << (players_[i]->getScore() + players_[i]->valueOfDiscarded()) << std::endl;
 		players_[i]->updateScore();
 	}
