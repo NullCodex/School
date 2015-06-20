@@ -1,22 +1,24 @@
 #include "Table.h"
 #include <string>
 #include <iostream>
+// Place the desired card onto the table, separating based on suit
 void Table::placeCard(Card* card){
 	cardsOnTable_.push_back(card);
 	if (card->getSuit() == CLUB){
-		clubs_.insert(card->getRank() + 1); //this might not work
+		clubs_.insert(card->getRank() + 1);
 	}
 	else if (card->getSuit() == SPADE){
-		spades_.insert(card->getRank() + 1); //this might not work
+		spades_.insert(card->getRank() + 1);
 	}
 	else if (card->getSuit() == HEART){
-		hearts_.insert(card->getRank() + 1); //this might not work
+		hearts_.insert(card->getRank() + 1);
 	}
 	else{
-		diamonds_.insert(card->getRank() + 1); //this might not work
+		diamonds_.insert(card->getRank() + 1);
 	}
 }
 
+// Find what was the last card played
 Card* Table::lastCardPlayed(){
 	if (cardsOnTable_.size() == 0){
 		return NULL;
@@ -24,6 +26,7 @@ Card* Table::lastCardPlayed(){
 	return cardsOnTable_[cardsOnTable_.size() - 1];
 }
 
+// Wipes the table used for a new round
 void Table::clear(){
 	cardsOnTable_.clear();
 	hearts_.clear();
@@ -32,6 +35,7 @@ void Table::clear(){
 	clubs_.clear();
 }
 
+// Overloaded the ostream operator to print the current table
 std::ostream &operator<<(std::ostream & sout, const Table& deck){
 	sout << "Clubs:";
 	for (std::set<int>::iterator it = deck.clubs_.begin(); it != deck.clubs_.end(); ++it){
@@ -56,6 +60,7 @@ std::ostream &operator<<(std::ostream & sout, const Table& deck){
 	return sout;
 }
 
+// Grabs the cards on table
 std::vector <Card*> Table::cardsOnTable(){
 	return cardsOnTable_;
 }
