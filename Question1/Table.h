@@ -10,6 +10,7 @@ public:
 	void placeCard(Card*); //add card to table
 	Card* lastCardPlayed();
 	void clear();
+	std::vector <Card*> cardsOnTable();
 private:
 	std::vector <Card*> cardsOnTable_;
 	std::set<int> clubs_;
