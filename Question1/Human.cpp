@@ -3,9 +3,12 @@
 #include <math.h>
 #include <algorithm>
 
-Human::Human():Player(){} 
+// Constructor
+Human::Human():Player(){}
+// Destructor
 Human::~Human(){}
 
+// prints the legal plays of a human player
 void Human::legalPlays(std::unordered_set <Card*> cards){
 	if (cards.size() == 1){
 		std::cout << " 7S";
@@ -18,7 +21,7 @@ void Human::legalPlays(std::unordered_set <Card*> cards){
 	}
 }
 
-
+// Discard a card from the player's hand
 void Human::discardCard(Card* card, std::unordered_set<Card*> cards){
 	for (unsigned int i = 0; i < (unsigned)hand_.size(); i++){
 		if (cards.find(card) != cards.end()){
@@ -28,7 +31,7 @@ void Human::discardCard(Card* card, std::unordered_set<Card*> cards){
 	Player::discardCard(card);
 }
 
-
+// Play the card and decrease the hand
 void Human::playCard(Card* card, std::unordered_set<Card*> cards){
 	if (!contains(card->getSuit(), card->getRank())){ //Card must be in your hand before you play it
 		throw InvalidCardException(card);
