@@ -43,28 +43,6 @@ int Player::getScore() const
 	return score_;
 }
 
-
-bool Player::isLegalPlay(Card card, Card* lastCard){
-	if (lastCard == NULL){
-		if (card == Card(SPADE, SEVEN)){
-			return true;
-		}
-		return false;
-	}
-	if (card.getRank() == lastCard->getRank()){
-		std::cout << "Last card: " << *lastCard << std::endl;
-		return true;
-	}
-	else if (card.getSuit() == lastCard->getSuit()){
-		if (abs(card.getRank() - lastCard->getRank()) == 1){
-			return true;
-		}
-	}
-	return false;
-}
-
-
-
 void Player::outputDiscardList() const {
 	for (int i = 0; i < discarded_.size(); i++){
 		std::cout << " " << *discarded_[i];

@@ -1,6 +1,5 @@
 #include "Game.h"
 #include <iostream>
-#include <typeinfo>
 #include <set>
 
 Game::Game(std::vector<char> players, int seed) : deck_(seed), playerTypes_(players){

@@ -12,27 +12,27 @@
 
 class Game{
 public:
-	Game(std::vector<char>, int);
-	~Game();
-	void newRound();
-	void nextTurn();
-	void outputCurrentTable() const;
-	void currentScore() const;
-	bool winnerExists() const;
-	bool hasQuit() const;
-	void endRound();
-	void outputWinners() const;
-	void updatePossiblePlays();
+	Game(std::vector<char>, int);	//Constructor, takes vector of chars denoting human/computer players and an int representing a random value to build the deck
+	~Game();	//Destructor, deletes player pointers
+	void newRound();	//Method that deals with new round operations
+	void nextTurn();	//Deals with next Turn operations
+	void outputCurrentTable() const;	//Outputs the table for human players
+	void currentScore() const;	//Outputs the score
+	bool winnerExists() const;	//Returns if a player has over 80 points
+	bool hasQuit() const;	//Returns if a player has quit
+	void endRound();	//Handles actions at the end of a round
+	void outputWinners() const;	//Outputs the winners
+	void updatePossiblePlays();	//Updates unordered set of possible plays the set of all cards that can be played
 private:
-	Card* getCardReference(Card);
-	void determineFirstPlayer();
-	int firstPlayer_;
-	Deck deck_;
-	std::vector <Player*> players_;
-	std::vector <char> playerTypes_;
-	std::unordered_set<Card *> possiblePlays_;
-	Table table_;
-	bool quit_;
+	Card* getCardReference(Card);	//Given a card, returns the pointer in the deck to the card
+	void determineFirstPlayer();	//Determines which player has seven of spades
+	int firstPlayer_;	//Keeps track of the index of the first player
+	Deck deck_;	//Holds the deck for the game
+	std::vector <Player*> players_;	//Keeps track of the players
+	std::vector <char> playerTypes_;	//Keeps track of human and computer players
+	std::unordered_set<Card *> possiblePlays_;	//Keeps track of the set of cards that can be played
+	Table table_;	//Keeps track of the cards on the table
+	bool quit_;	//Keeps track of if a player has quit the game
 };
 
 
