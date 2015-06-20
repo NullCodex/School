@@ -2,6 +2,7 @@
 #include <iostream>
 #include <set>
 
+// Game constructor: pushes back new player instances into the vector
 Game::Game(std::vector<char> players, int seed) : deck_(seed), playerTypes_(players){
 	quit_ = false;
 	for (unsigned int i = 0; i < players.size(); i++){
@@ -13,11 +14,15 @@ Game::Game(std::vector<char> players, int seed) : deck_(seed), playerTypes_(play
 		}
 	}
 }
+
+// Destructor deletes the player instances to prevent memory leaks
 Game::~Game(){
 	for (unsigned int i = 0; i < players_.size(); i++){
 		delete players_[i];
 	}
 }
+
+// Creates a new round, each player gets a new hand and we determine the first player ie who has 7S
 void Game::newRound(){
 	table_.clear();
 	possiblePlays_.clear();
@@ -30,6 +35,7 @@ void Game::newRound(){
 	std::cout << "A new round begins. It's player " << (firstPlayer_+1) << "'s turn to play." << std::endl;
 }
 
+// Function to check which existing player has the seven of spades
 void Game::determineFirstPlayer(){
 	for (unsigned int i = 0; i < players_.size(); i++){
 		if (players_[i]->contains(SPADE, SEVEN)){
@@ -39,10 +45,12 @@ void Game::determineFirstPlayer(){
 	}
 }
 
+// Game function to control the flow of the game
 void Game::nextTurn(){
 	int curPlayer = firstPlayer_;
 	for (unsigned int i = 0; i < players_.size() && !quit_; i++){
 		updatePossiblePlays();
+		// Grab a command from the user if the player is a human type
 		if (playerTypes_[curPlayer] == 'h'){
 			Command c;
 			outputCurrentTable();
@@ -58,9 +66,9 @@ void Game::nextTurn(){
 					try{
 						Card* card = getCardReference(c.card);
 						Human* human = dynamic_cast<Human*>(players_[curPlayer]);
-						human->playCard(card, possiblePlays_);
+						human->playCard(card, possiblePlays_); // PLays the card
 						std::cout << "Player " << (curPlayer + 1) << " plays " << *card << "." << std::endl;
-						table_.placeCard(card);
+						table_.placeCard(card); // Place the card onto the type
 					}
 					catch (Human::InvalidCardException &e){
 						std::cout << "This is not a legal play." << std::endl;
@@ -69,6 +77,7 @@ void Game::nextTurn(){
 				}
 				else if (c.type == DISCARD){
 					try{
+						// Discard the desired card
 						Card* card = getCardReference(c.card);
 						Human* human = dynamic_cast<Human*>(players_[curPlayer]);
 						human->discardCard(card, possiblePlays_);
@@ -80,12 +89,12 @@ void Game::nextTurn(){
 					}
 				}
 				else if (c.type == DECK){
-					std::cout << deck_ << std::endl;
+					std::cout << deck_ << std::endl; // prints the deck
 				}
 				else if (c.type == QUIT){
 					quit_ = true;
 				}
-				else{ //ragequit
+				else{ //ragequit: replace the current human player with a computer player
 					Human* temp = dynamic_cast<Human*>(players_[curPlayer]);
 					players_[curPlayer] = new Computer(players_[curPlayer]);
 					delete temp;
@@ -93,14 +102,11 @@ void Game::nextTurn(){
 					playerTypes_[curPlayer] = 'c';
 					curPlayer--;
 					i--;
-					// Want to make game a friend of both computer and human?
-					// Need to transfer the ownership of cards to Computer.
-
 				}
 			}
 		}
 		else{
-			//Do Computer player's turn
+			//Do Computer player's turn: basic ai which will play the first legal card if no legal plays exists, discard the first one
 			Computer* computer = dynamic_cast<Computer*>(players_[curPlayer]);
 			std::cout << "Player " << (curPlayer+1) << " ";
 			players_[curPlayer]->legalPlays(possiblePlays_);
@@ -114,6 +120,7 @@ void Game::nextTurn(){
 	}
 }
 
+// Grabs the card reference
 Card* Game::getCardReference(Card card){
 	Card* cardReference = NULL;
 	for (int i = 0; i < 52; i++){
@@ -124,6 +131,7 @@ Card* Game::getCardReference(Card card){
 	}
 	return cardReference;
 }
+// Prints the current table
 void Game::outputCurrentTable() const{
 	std::cout << "Cards on the table:\n" << table_;
 }
@@ -144,6 +152,7 @@ bool Game::hasQuit() const{
 	return quit_;
 }
 
+// Grabs the round score and also print the scores
 void Game::endRound() {
 	for (unsigned int i = 0; i < players_.size(); i++){
 		std::cout << "Player " << (i + 1) << "'s discards:";
@@ -155,6 +164,7 @@ void Game::endRound() {
 
 }
 
+// Output the winner/winners of the game
 void Game::outputWinners() const{
 	std::set<int> scores;
 	for (unsigned int i = 0; i < players_.size(); i++){
@@ -167,6 +177,7 @@ void Game::outputWinners() const{
 	}
 }
 
+// Updates the possible plays for players
 void Game::updatePossiblePlays(){
 	Card* card = table_.lastCardPlayed();
 	if (card==NULL){
